@@ -6,6 +6,7 @@ The official website for Afrobeats Superstar **Raploard**, built with modern web
 
 - **Premium Design**: Dark mode aesthetic with Gold accents and glassmorphism.
 - **Hero Section**: Cinematic introduction with video integration.
+- **Global Video Player**: Integrated YouTube modal for watching music videos deeply within the site.
 - **Music/Discography**: Interactive grid showcasing latest albums and singles.
 - **Tour Dates**: Live interactive list of upcoming shows.
 - **Responsive**: Specialized mobile menu and adaptive layouts for all devices.

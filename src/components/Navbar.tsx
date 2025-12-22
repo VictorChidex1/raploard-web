@@ -1,13 +1,25 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Music2, Calendar, User, Mail, Home } from "lucide-react";
+import {
+  Menu,
+  X,
+  Music2,
+  Calendar,
+  User,
+  Mail,
+  Home,
+  Video,
+  ShoppingBag,
+} from "lucide-react";
 import { cn } from "../lib/utils";
 import { Button } from "./ui/Button";
 
 const navLinks = [
   { name: "Home", path: "/", icon: Home },
   { name: "Music", path: "/music", icon: Music2 },
+  { name: "Videos", path: "/videos", icon: Video },
+  { name: "Store", path: "/store", icon: ShoppingBag }, // NEW: Added Store link
   { name: "Tour", path: "/tour", icon: Calendar },
   { name: "About", path: "/about", icon: User },
   { name: "Contact", path: "/contact", icon: Mail },

@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Play, Music2, ExternalLink } from "lucide-react";
 import { Button } from "./ui/Button";
+import { VideoModal } from "./ui/VideoModal";
 
 interface Release {
   title: string;
@@ -8,7 +10,8 @@ interface Release {
   tag: string;
   description: string;
   image: string;
-  releaseDate: string; // NEW: Added release date
+  releaseDate: string;
+  videoId?: string; // Optional: If present, Play button opens modal
   links: {
     stream: string;
     spotify: string;
@@ -60,9 +63,10 @@ const releases: Release[] = [
     highlight: "",
     tag: "Hit Single",
     description:
-      "RapLoard shifts the tempo to deliver 'Ella', a radiant and heartfelt love song. Stripping back the high-energy festivity, he trades dancefloor commands for intimate melodies and earnest lyrics. This smooth, captivating track is a pure dedication, showcasing RapLoard's versatility as he crafts a timeless serenade for that special someone. 'Ella' is the sound of affection, perfectly distilled.",
-    image: "/raploard-ella.jpeg",
+      "RapLoard shifts the tempo to deliver 'Deep Down', a radiant and heartfelt love song. Stripping back the high-energy festivity, he trades dancefloor commands for intimate melodies and earnest lyrics. This smooth, captivating track is a pure dedication, showcasing RapLoard's versatility as he crafts a timeless serenade for that special someone.",
+    image: "https://img.youtube.com/vi/lpSNfx7jYJc/maxresdefault.jpg", // YouTube Thumbnail
     releaseDate: "Jun 28, 2024",
+    videoId: "lpSNfx7jYJc", // Triggers video modal
     links: {
       stream: "https://ffm.to/deep_down",
       spotify: "https://open.spotify.com/track/0ssCsieQQ7H3FbJXv5PuzM",
@@ -76,6 +80,8 @@ const releases: Release[] = [
 ];
 
 export function LatestRelease() {
+  const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
+
   return (
     <section className="py-24 bg-brand-dark/50 relative overflow-hidden">
       {/* Background Decorative Elements */}
@@ -109,6 +115,11 @@ export function LatestRelease() {
                   <Button
                     size="icon"
                     className="rounded-full w-16 h-16 bg-brand-gold text-brand-dark hover:scale-110 border-none"
+                    onClick={() => {
+                      if (release.videoId) {
+                        setPlayingVideoId(release.videoId);
+                      }
+                    }}
                   >
                     <Play className="fill-current ml-1" size={32} />
                   </Button>
@@ -221,6 +232,12 @@ export function LatestRelease() {
           </motion.div>
         ))}
       </div>
+
+      <VideoModal
+        isOpen={!!playingVideoId}
+        onClose={() => setPlayingVideoId(null)}
+        videoId={playingVideoId || ""}
+      />
     </section>
   );
 }
