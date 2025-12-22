@@ -14,28 +14,32 @@ export function Hero() {
         <img
           src="/raploard-hero.jpeg"
           alt="Raploard Hero"
-          className="h-full w-full object-cover object-center opacity-60"
+          className="h-full w-full object-cover object-[50%_20%] opacity-80"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/50 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-brand-dark via-brand-dark/20 to-transparent" />
+        {/* Bottom fade for smooth transition to next section */}
+        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-transparent to-transparent" />
+        {/* Strong Left Gradient to make text readable and face bright */}
+        <div className="absolute inset-0 bg-gradient-to-r from-brand-dark via-brand-dark/80 via-40% to-transparent" />
       </div>
 
       {/* Content */}
       <div className="relative z-10 flex h-full items-center px-6 container mx-auto">
-        <div className="max-w-4xl space-y-8">
+        <div className="max-w-2xl space-y-8 mt-20 md:mt-0">
+          {" "}
+          {/* Constrained width */}
           <motion.div
             initial={{ opacity: 0, y: 100 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <h1 className="font-header text-[clamp(4rem,15vw,12rem)] font-bold uppercase leading-none text-white tracking-tighter">
+            <h1 className="font-header text-[clamp(4rem,12vw,10rem)] font-bold uppercase leading-[0.9] text-white tracking-tighter">
               Rap
-              <span className="text-transparent bg-clip-text bg-gradient-to-b from-brand-gold to-yellow-600">
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold to-yellow-600">
                 Loard
               </span>
             </h1>
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -45,7 +49,6 @@ export function Hero() {
             <div className="h-[1px] w-12 bg-brand-gold" />
             <span>AFROBEATS SUPERSTAR</span>
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
