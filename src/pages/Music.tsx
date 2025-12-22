@@ -6,16 +6,37 @@ import { Button } from "../components/ui/Button";
 
 const albums = [
   {
+    title: "Carry Go",
+    type: "Single",
+    releaseDate: "Dec 20, 2024",
+    image: "/carry-go.jpg",
+    streamLink: "https://ffm.to/carrygo",
+  },
+  {
+    title: "Ella",
+    type: "Single",
+    releaseDate: "Nov 14, 2024",
+    image: "/raploard-ella.jpeg",
+    streamLink: "https://ffm.to/ellla",
+  },
+  {
+    title: "Deep Down",
+    type: "Single",
+    releaseDate: "Jun 28, 2024",
+    image: "/raploard-ella.jpeg", // Using same placeholder for now or if available
+    streamLink: "https://ffm.to/deep_down",
+  },
+  {
     title: "Golden Touch",
     type: "EP",
-    year: "2024",
+    releaseDate: "Feb 10, 2024",
     image: "/raploard2.jpeg",
     streamLink: "#",
   },
   {
     title: "Lagos Vibration",
     type: "Single",
-    year: "2023",
+    releaseDate: "Nov 23, 2023",
     image: "/raploard.jpeg",
     streamLink: "#",
   },
@@ -68,7 +89,7 @@ export function Music() {
                 {album.title}
               </h3>
               <div className="flex items-center gap-3 text-gray-400 text-sm uppercase tracking-widest mt-2">
-                <span>{album.year}</span>
+                <span>{album.releaseDate}</span>
                 <span className="w-1 h-1 bg-brand-gold rounded-full" />
                 <span>{album.type}</span>
               </div>
