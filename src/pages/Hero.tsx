@@ -55,18 +55,24 @@ export function Hero() {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="flex flex-col sm:flex-row gap-6 pt-8"
           >
-            <Button size="lg" withArrow>
-              Stream Latest Hit
-            </Button>
+            <a
+              href="https://ffm.to/carrygo"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button size="lg" withArrow>
+                Stream Latest Hit
+              </Button>
+            </a>
 
             <button
               onClick={() => setIsVideoOpen(true)}
-              className="group flex items-center gap-4 text-white hover:text-brand-gold transition-colors duration-300"
+              className="group flex items-center gap-4 text-white transition-colors duration-300"
             >
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/30 bg-white/10 backdrop-blur-sm transition-all group-hover:scale-110 group-hover:bg-brand-gold group-hover:border-brand-gold border-brand-gold">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/30 bg-white/10 backdrop-blur-sm transition-all group-hover:scale-110 group-hover:bg-brand-gold group-hover:border-brand-gold group-hover:text-brand-dark">
                 <Play className="h-6 w-6 ml-1 fill-current" />
               </div>
-              <span className="text-lg font-bold uppercase tracking-widest">
+              <span className="text-lg font-bold uppercase tracking-widest group-hover:text-brand-gold">
                 Watch Video
               </span>
             </button>
@@ -95,7 +101,7 @@ export function Hero() {
       <VideoModal
         isOpen={isVideoOpen}
         onClose={() => setIsVideoOpen(false)}
-        videoId="dQw4w9WgXcQ" // Placeholder ID, user can change later
+        videoId="mr6xYQrywnU" // Carry Go YouTube Short
       />
     </div>
   );

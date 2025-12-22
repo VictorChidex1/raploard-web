@@ -18,6 +18,7 @@ The official website for Afrobeats Superstar **Raploard**, built with modern web
 - **Styling**: Tailwind CSS (v3) + CSS Variables
 - **Animations**: Framer Motion
 - **Build Tool**: Vite
+- **Backend**: Firebase (Firestore & Analytics)
 
 ## 🏃‍♂️ Getting Started
 
@@ -27,13 +28,22 @@ The official website for Afrobeats Superstar **Raploard**, built with modern web
     npm install
     ```
 
-2.  **Run Development Server**
+2.  **Configure Environment**
+    Create a `.env` file in the root directory and add your Firebase keys:
+
+    ```env
+    VITE_FIREBASE_API_KEY=your_key
+    VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+    ...
+    ```
+
+3.  **Run Development Server**
 
     ```bash
     npm run dev
     ```
 
-3.  **Build for Production**
+4.  **Build for Production**
     ```bash
     npm run build
     ```
