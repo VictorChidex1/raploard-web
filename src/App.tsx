@@ -5,9 +5,12 @@ import { Music } from "./pages/Music";
 import { About } from "./pages/About";
 import { Contact } from "./pages/Contact";
 
+import { ScrollToTop } from "./components/ui/ScrollToTop";
+
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/music" element={<Music />} />
