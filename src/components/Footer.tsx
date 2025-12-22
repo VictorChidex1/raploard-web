@@ -160,7 +160,7 @@ export function Footer() {
             reserved.
           </p>
           <p className="text-gray-600 text-xs uppercase tracking-wider">
-            Designed by Vibe Coding
+            Designed by Chidex
           </p>
         </div>
       </div>
