@@ -434,4 +434,68 @@ On mobile, we noticed a "Download" button appeared. We removed it by:
 
 ---
 
+## 10. Deep Dive: The Sonic Manifesto (About Section) 📜
+
+_Updated Dec 23_ - **The Visual Storyteller**
+
+We moved away from a traditional "About Me" text block and built a **Split-Screen Manifesto**. The goal was to sell the _vibe_ of Raploard before the user even reads the bio.
+
+### A. The Concept 🌗
+
+Inspired by high-fashion magazine spreads (like Vogue or GQ), we used a 50/50 layout:
+
+- **Left**: A large, high-contrast portrait.
+- **Right**: Bold, staggered typography.
+
+### B. The Logic Flow (Scroll-Triggered) 🧠
+
+We wanted the story to "unfold" as the user reads. If the text was just sitting there statically, it would be boring.
+
+**1. Viewport Detection (`whileInView`)**
+We utilize `framer-motion` to watch the user's scroll position.
+
+- **Default**: `opacity: 0` (Invisible).
+- **Action**: When the component enters the screen (the "Viewport"), we switch to `opacity: 1`.
+
+```tsx
+<motion.div
+  initial={{ opacity: 0, x: -50 }} // Start hidden and shifted left
+  whileInView={{ opacity: 1, x: 0 }} // Fade in and slide to center
+  viewport={{ once: true }} // Only do this ONCE. Don't annoy the user if they scroll back up.
+/>
+```
+
+**2. The "Staggered Reveal" sequence**
+We didn't want everything to appear at once. We wanted a sequence:
+
+- **0.0s**: Image slides in.
+- **0.2s**: "The Manifesto" label appears.
+- **0.4s**: The main Headline ("New Africa") appears.
+- **0.6s**: The Body text moves up.
+- **0.8s**: The "Read Full Bio" button appears.
+
+This gives the brain time to process each piece of information.
+
+### C. Design & Typography Rules 🎨
+
+**1. The "New Africa" Shimmer**
+We made the text "New Africa" look like it was glowing or made of glass.
+
+- **Code**: `bg-clip-text text-transparent bg-gradient-to-r from-white to-white/50`
+- **Translation**: We painted the background of the text with a gradient, then told the browser "Clip the background to the shape of the letters," and finally made the letters themselves see-through.
+
+**2. The Decorative Frame**
+To make the image look premium, we added a double-border effect.
+
+- **Inset Border**: A thin white line inside the image (`inset-4`).
+- **Offset Border**: A gold border behind the image, shifted slightly (`top-12 -left-12`). This creates depth and makes the layout feel "engineered."
+
+### D. Terminologies Used 📚
+
+1.  **Viewport**: The visible area of the webpage on your screen. "Below the fold" means outside the viewport.
+2.  **Staggering**: Introducing elements with a slight delay between them (0.1s, 0.2s, 0.3s) to create rhythm.
+3.  **One-Time Animation (`once: true`)**: A crucial UX decision. We only animate the entry _once_. If the user scrolls up and down, we don't want the text flying around constantly. It should feel solid after it arrives.
+
+---
+
 **Built with 🖤 by your Lead Architect / Vibe Coding Team.**
