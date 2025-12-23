@@ -26,8 +26,8 @@ const videos: Video[] = [
     title: "Grass to Grace (feat. Barry Jhay)",
     category: "Music Video",
     releaseDate: "Mar 12, 2021",
-    thumbnail: "https://img.youtube.com/vi/ZtPrykFW2B8/maxresdefault.jpg",
-    videoId: "ZtPrykFW2B8",
+    thumbnail: "https://img.youtube.com/vi/up_-f2LXwdI/maxresdefault.jpg",
+    videoId: "up_-f2LXwdI",
   },
   {
     title: "Ella (Live Performance Video)",
