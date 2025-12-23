@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Play, Pause, Volume2, Upload } from "lucide-react";
+import { Play, Pause, Volume2 } from "lucide-react";
 import { Button } from "./ui/Button";
 
 export function SonicVault() {
@@ -174,16 +174,6 @@ export function SonicVault() {
                 <div className="w-3/4 h-full bg-gray-500" />
               </div>
             </div>
-
-            <a href="/carry-go.mp3" download className="md:hidden">
-              <Button
-                size="icon"
-                variant="outline"
-                className="w-12 h-12 rounded-full border-white/10 text-gray-400"
-              >
-                <Upload size={18} className="rotate-180" />
-              </Button>
-            </a>
           </div>
         </div>
       </div>
