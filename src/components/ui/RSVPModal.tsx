@@ -1,8 +1,9 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ArrowRight } from "lucide-react";
+import { X, ArrowRight, Loader2, Check } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom"; // Import Link
-import { Button } from "./Button";
+import { Link } from "react-router-dom";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../../lib/firebase";
 
 interface RSVPModalProps {
   isOpen: boolean;
@@ -11,14 +12,35 @@ interface RSVPModalProps {
 
 export function RSVPModal({ isOpen, onClose }: RSVPModalProps) {
   const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Logic to handle email submission (e.g., Firebase) would go here
-    console.log("Submitted email:", email);
-    // Ideally close modal or show success message
-    onClose();
-    alert("Thanks for subscribing! We'll keep you posted.");
+    if (!email) return;
+
+    setStatus("loading");
+
+    try {
+      await addDoc(collection(db, "newsletter"), {
+        email,
+        timestamp: serverTimestamp(),
+        source: "rsvp_modal",
+      });
+      setStatus("success");
+      setEmail("");
+
+      // Auto close after 2 seconds on success
+      setTimeout(() => {
+        setStatus("idle");
+        onClose();
+      }, 2000);
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      setStatus("error");
+      setTimeout(() => setStatus("idle"), 3000);
+    }
   };
 
   return (
@@ -70,17 +92,27 @@ export function RSVPModal({ isOpen, onClose }: RSVPModalProps) {
                 <div className="relative">
                   <input
                     type="email"
-                    placeholder="Your Email"
+                    placeholder={
+                      status === "error" ? "Something went wrong" : "Your Email"
+                    }
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-full border border-gray-300 bg-white px-6 py-4 pr-12 text-lg text-gray-900 placeholder:text-gray-400 focus:border-black focus:outline-none focus:ring-1 focus:ring-black transition-all"
+                    disabled={status === "loading" || status === "success"}
+                    className="w-full rounded-full border border-gray-300 bg-white px-6 py-4 pr-12 text-lg text-gray-900 placeholder:text-gray-400 focus:border-black focus:outline-none focus:ring-1 focus:ring-black transition-all disabled:opacity-50"
                     required
                   />
                   <button
                     type="submit"
-                    className="absolute right-2 top-2 bottom-2 rounded-full bg-black text-white p-3 hover:bg-gray-800 transition-colors"
+                    disabled={status === "loading" || status === "success"}
+                    className="absolute right-2 top-2 bottom-2 rounded-full bg-black text-white p-3 hover:bg-gray-800 transition-colors disabled:opacity-70 disabled:hover:bg-black"
                   >
-                    <ArrowRight size={20} />
+                    {status === "loading" ? (
+                      <Loader2 className="animate-spin h-5 w-5" />
+                    ) : status === "success" ? (
+                      <Check className="h-5 w-5" />
+                    ) : (
+                      <ArrowRight size={20} />
+                    )}
                   </button>
                 </div>
 
