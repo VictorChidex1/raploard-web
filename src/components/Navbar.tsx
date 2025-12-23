@@ -20,7 +20,6 @@ const navLinks = [
   { name: "Music", path: "/music", icon: Music2 },
   { name: "Videos", path: "/videos", icon: Video },
   { name: "Store", path: "/store", icon: ShoppingBag }, // NEW: Added Store link
-  { name: "Tour", path: "/#tour", icon: Calendar },
   { name: "About", path: "/about", icon: User },
   { name: "Contact", path: "/contact", icon: Mail },
 ];
@@ -85,9 +84,6 @@ export function Navbar() {
                 )}
               </Link>
             ))}
-            <Button size="sm" variant="primary">
-              Stream Now
-            </Button>
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -132,16 +128,6 @@ export function Navbar() {
                   </Link>
                 </motion.div>
               ))}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
-                className="mt-8"
-              >
-                <Button size="lg" className="w-full">
-                  Stream Latest Hit
-                </Button>
-              </motion.div>
             </div>
           </motion.div>
         )}
