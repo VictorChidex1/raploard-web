@@ -1,0 +1,15 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow anyone to subscribe to the newsletter (write-only)
+    match /newsletter/{document} {
+      allow write: if true;
+      allow read: if false; // Protect user data: only admins can read via Firebase Console
+    }
+    
+    // Default deny for any other future collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

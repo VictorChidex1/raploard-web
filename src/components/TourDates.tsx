@@ -8,7 +8,7 @@ export function TourDates() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <section className="py-24 bg-brand-dark relative">
+    <section id="tour" className="py-24 bg-brand-dark relative scroll-mt-24">
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

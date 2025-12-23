@@ -20,7 +20,7 @@ const navLinks = [
   { name: "Music", path: "/music", icon: Music2 },
   { name: "Videos", path: "/videos", icon: Video },
   { name: "Store", path: "/store", icon: ShoppingBag }, // NEW: Added Store link
-  { name: "Tour", path: "/tour", icon: Calendar },
+  { name: "Tour", path: "/#tour", icon: Calendar },
   { name: "About", path: "/about", icon: User },
   { name: "Contact", path: "/contact", icon: Mail },
 ];

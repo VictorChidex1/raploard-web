@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Instagram,
@@ -6,17 +7,61 @@ import {
   Music2,
   Mail,
   ArrowRight,
+  Loader2,
+  Check,
 } from "lucide-react";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../lib/firebase";
 import { Button } from "./ui/Button";
 
 const socialLinks = [
-  { name: "Instagram", icon: Instagram, href: "#" },
-  { name: "Twitter", icon: Twitter, href: "#" },
-  { name: "YouTube", icon: Youtube, href: "#" },
-  { name: "Spotify", icon: Music2, href: "#" },
+  {
+    name: "Instagram",
+    icon: Instagram,
+    href: "https://www.instagram.com/raploard_tm/",
+  },
+  { name: "Twitter", icon: Twitter, href: "https://x.com/Raploard_Tm" },
+  {
+    name: "YouTube",
+    icon: Youtube,
+    href: "http://www.youtube.com/@raploardOfficial",
+  },
+  {
+    name: "Spotify",
+    icon: Music2,
+    href: "https://open.spotify.com/artist/2QdZSso2eXrxggHLO02bxk?si=vUQDGetqRPKVOTDwQEAeLQ",
+  },
 ];
 
 export function Footer() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setStatus("loading");
+
+    try {
+      await addDoc(collection(db, "newsletter"), {
+        email,
+        timestamp: serverTimestamp(),
+        source: "website_footer",
+      });
+      setStatus("success");
+      setEmail("");
+      // Reset success message after 3 seconds
+      setTimeout(() => setStatus("idle"), 3000);
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      setStatus("error");
+      setTimeout(() => setStatus("idle"), 3000);
+    }
+  };
+
   return (
     <footer className="bg-brand-dark border-t border-white/10 pt-20 pb-10">
       <div className="container mx-auto px-6">
@@ -29,21 +74,42 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-gray-400 max-w-sm">
-              Join the Vibe. Subscribe to get exclusive updates on toure dates,
+              Join the Vibe. Subscribe to get exclusive updates on tour dates,
               new drops, and merch.
             </p>
 
-            <form className="flex w-full max-w-sm items-center space-x-2">
+            <form
+              onSubmit={handleSubmit}
+              className="flex w-full max-w-sm items-center space-x-2"
+            >
               <div className="relative flex-1">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <input
                   type="email"
-                  placeholder="Enter your email"
-                  className="w-full bg-white/5 border border-white/10 px-10 py-3 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-brand-gold transition-colors"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={
+                    status === "error"
+                      ? "Something went wrong"
+                      : "Enter your email"
+                  }
+                  disabled={status === "loading" || status === "success"}
+                  className="w-full bg-white/5 border border-white/10 px-10 py-3 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-brand-gold transition-colors disabled:opacity-50"
                 />
               </div>
-              <Button size="icon" variant="primary">
-                <ArrowRight size={20} />
+              <Button
+                size="icon"
+                variant="primary"
+                type="submit"
+                disabled={status === "loading" || status === "success"}
+              >
+                {status === "loading" ? (
+                  <Loader2 className="animate-spin h-5 w-5" />
+                ) : status === "success" ? (
+                  <Check className="h-5 w-5" />
+                ) : (
+                  <ArrowRight size={20} />
+                )}
               </Button>
             </form>
           </div>
@@ -139,6 +205,8 @@ export function Footer() {
                   <a
                     key={social.name}
                     href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex items-center gap-3 text-gray-400 hover:text-brand-gold transition-colors group"
                   >
                     <social.icon
