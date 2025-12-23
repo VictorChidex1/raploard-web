@@ -351,4 +351,29 @@ match /newsletter/{document} {
 
 ---
 
+### F. The RSVP Integration (Tour Dates) 🎫
+
+_Updated Dec 23_ - **One Database, Multiple Doors**
+
+We also connected the **RSVP Modal** (on the homepage) to the same system.
+
+**The "Source" Field**:
+This is how we tell them apart in the database.
+
+- **Footer Form**: `source: "website_footer"`
+- **RSVP Modal**: `source: "rsvp_modal"`
+
+This allows you to analyze which method converts more fans!
+
+```tsx
+// Inside RSVPModal.tsx
+await addDoc(collection(db, "newsletter"), {
+  email: email,
+  timestamp: serverTimestamp(),
+  source: "rsvp_modal", // <--- The distinct tag
+});
+```
+
+---
+
 **Built with 🖤 by your Lead Architect / Vibe Coding Team.**
