@@ -4,6 +4,7 @@ import { LatestRelease } from "../components/LatestRelease";
 import { TourDates } from "../components/TourDates";
 import { Hero } from "./Hero";
 import { SonicVault } from "../components/SonicVault";
+import { SonicManifesto } from "../components/SonicManifesto";
 
 export function Home() {
   return (
@@ -12,6 +13,7 @@ export function Home() {
       <Hero />
       <SonicVault />
       <LatestRelease />
+      <SonicManifesto />
       <TourDates />
       <Footer />
     </div>
