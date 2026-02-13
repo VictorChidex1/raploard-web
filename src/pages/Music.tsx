@@ -19,7 +19,7 @@ const albums: Album[] = [
   {
     title: "Carry Go",
     type: "Single",
-    releaseDate: "Dec 09, 2025",
+    releaseDate: "Dec 15, 2025",
     image: "/carry-go.jpg",
     streamLink: "https://ffm.to/carrygo",
   },

@@ -28,7 +28,7 @@ const releases: Release[] = [
     tag: "New Release",
     description: `Afrobeats powerhouse RapLoard ushers in the festive season with "Carry Go," his essential December jam. Built on an infectious rhythm and an undeniable call to celebration, the track is a pure energy boost. It’s a command to dance, a soundtrack for merriment, and RapLoard's vibrant gift to the global audience. Let the rhythm move you to carry go and celebrate.`,
     image: "/carry-go.jpg",
-    releaseDate: "Dec 20, 2024",
+    releaseDate: "Dec 15, 2025",
     links: {
       stream: "https://ffm.to/carrygo",
       spotify: "https://open.spotify.com/track/0NgdKtTbEG736AqdRBQZNc?si=1",
@@ -46,7 +46,7 @@ const releases: Release[] = [
     description:
       "RapLoard shifts the tempo to deliver 'Ella', a radiant and heartfelt love song. Stripping back the high-energy festivity, he trades dancefloor commands for intimate melodies and earnest lyrics. This smooth, captivating track is a pure dedication, showcasing RapLoard's versatility as he crafts a timeless serenade for that special someone. 'Ella' is the sound of affection, perfectly distilled.",
     image: "/raploard-ella.jpeg",
-    releaseDate: "Nov 14, 2024",
+    releaseDate: "Nov 14, 2025",
     links: {
       stream: "https://ffm.to/ellla",
       spotify:
