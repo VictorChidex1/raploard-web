@@ -5,7 +5,6 @@ import {
   Menu,
   X,
   Music2,
-  Calendar,
   User,
   Mail,
   Home,
@@ -13,7 +12,6 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import { cn } from "../lib/utils";
-import { Button } from "./ui/Button";
 
 const navLinks = [
   { name: "Home", path: "/", icon: Home },
@@ -49,10 +47,10 @@ export function Navbar() {
         animate={{ y: 0 }}
         transition={{ duration: 0.5 }}
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent",
+          "fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent pt-[env(safe-area-inset-top)]",
           isScrolled
-            ? "bg-brand-dark/80 backdrop-blur-xl border-white/5 py-3"
-            : "bg-transparent py-6"
+            ? "bg-brand-dark/80 backdrop-blur-xl border-white/5 pb-3"
+            : "bg-transparent pb-6"
         )}
       >
         <div className="container mx-auto px-6 flex items-center justify-between">

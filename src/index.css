@@ -34,8 +34,13 @@
     --radius: 0.5rem;
   }
 
+  html {
+    background-color: #09090b;
+  }
+
   body {
     @apply bg-[#09090b] text-white font-body antialiased selection:bg-[#ffd700] selection:text-[#09090b] overflow-x-hidden;
+    min-height: 100dvh;
   }
 
   h1,
@@ -88,8 +93,6 @@
     scrollbar-width: none;
   }
 }
-
-
 
 @layer base {
   * {
