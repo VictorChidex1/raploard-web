@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import {
   Shield,
   Eye,
@@ -10,6 +10,7 @@ import {
   ChevronDown,
   Activity,
   Mail,
+  Printer,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { CONFIG } from "../config";
@@ -51,6 +52,12 @@ const POLICY_SECTIONS = [
     title: "Direct Comm",
     content: `For any inquiries regarding this protocol, data erasure requests, or security concerns, direct your communications exclusively to our compliance channel: ${CONFIG.contact.email}. Responses will be handled with appropriate urgency and discretion.`,
   },
+  {
+    id: "global-rights",
+    icon: Shield,
+    title: "Global Privacy Rights (CCPA / GDPR)",
+    content: `For residents of California (CCPA/CPRA) and the European Union (GDPR), we provide extended data rights. You have the right to know what personal information is being collected, the right to request deletion, and the right to opt-out of any future sale of personal information. All requests are processed within a 30-day mandated window.`,
+  },
 ];
 
 export function PrivacyPolicy() {
@@ -58,6 +65,13 @@ export function PrivacyPolicy() {
   const [openAccordion, setOpenAccordion] = useState<string | null>(
     POLICY_SECTIONS[0].id
   );
+
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
 
   // Smooth scroll handler for Desktop sidebar
   const scrollToSection = (id: string) => {
@@ -91,7 +105,11 @@ export function PrivacyPolicy() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-brand-dark text-white selection:bg-brand-gold selection:text-brand-dark">
+    <div className="min-h-screen bg-brand-dark text-white selection:bg-brand-gold selection:text-brand-dark relative">
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-[3px] bg-brand-gold origin-left z-[60]"
+        style={{ scaleX }}
+      />
       <Navbar />
 
       {/* The Protocol Header */}
@@ -117,10 +135,22 @@ export function PrivacyPolicy() {
                 Is Secure.
               </span>
             </h1>
-            <div className="inline-block border border-white/10 bg-white/5 py-2 px-4 rounded-sm backdrop-blur-sm">
+            <div className="inline-block border border-white/10 bg-white/5 py-2 px-4 rounded-sm backdrop-blur-sm mb-12">
               <p className="font-body text-xs md:text-sm text-gray-400 font-medium tracking-widest uppercase">
-                Last Revised: <span className="text-white">April 2026</span>
+                VERSION 1.2 | EFFECTIVE: <span className="text-white">APRIL 1, 2026</span>
               </p>
+            </div>
+
+            {/* TL;DR Executive Summary */}
+            <div className="max-w-2xl border-l-2 border-brand-gold pl-6">
+              <h3 className="font-serif text-2xl md:text-3xl text-gray-200 mb-6 italic">
+                "Trust is non-negotiable."
+              </h3>
+              <ul className="space-y-3 font-body text-sm md:text-base text-gray-400 mb-4">
+                <li className="flex gap-3"><span className="text-brand-gold font-bold">01.</span> We don't sell your data. Never have, never will.</li>
+                <li className="flex gap-3"><span className="text-brand-gold font-bold">02.</span> You have complete sovereign control over your information.</li>
+                <li className="flex gap-3"><span className="text-brand-gold font-bold">03.</span> Security is built into the foundation of this ecosystem.</li>
+              </ul>
             </div>
           </motion.div>
         </div>
@@ -131,10 +161,19 @@ export function PrivacyPolicy() {
         <div className="container mx-auto max-w-5xl flex flex-col md:flex-row gap-16 relative">
           {/* Desktop Sticky Index (Left Sidebar) */}
           <div className="hidden md:block w-1/4">
-            <div className="sticky top-32 flex flex-col gap-2">
-              <h4 className="font-header text-xs text-gray-500 tracking-[0.2em] uppercase mb-4 ml-4">
-                The Index
-              </h4>
+            <div className="sticky top-32 flex flex-col gap-2 bg-white/[0.02] backdrop-blur-md border border-white/[0.05] p-6 rounded-sm">
+              <div className="flex items-center justify-between mb-6">
+                <h4 className="font-header text-xs text-gray-500 tracking-[0.2em] uppercase">
+                  The Index
+                </h4>
+                <button 
+                  onClick={() => window.print()}
+                  className="flex items-center gap-2 text-xs font-header tracking-wider uppercase text-brand-gold hover:text-white transition-colors border border-brand-gold/30 hover:border-white/50 px-3 py-1.5 rounded-sm"
+                >
+                  <Printer size={12} />
+                  <span>Print</span>
+                </button>
+              </div>
               {POLICY_SECTIONS.map((section) => {
                 const isActive = activeSection === section.id;
                 return (
@@ -171,13 +210,19 @@ export function PrivacyPolicy() {
               <motion.div
                 key={section.id}
                 id={section.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial="hidden"
+                whileInView="visible"
                 viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.6 }}
+                variants={{
+                  hidden: { opacity: 0 },
+                  visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
+                }}
                 className="scroll-mt-32"
               >
-                <div className="flex items-center gap-4 mb-8 pb-4 border-b border-white/10">
+                <motion.div 
+                  variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
+                  className="flex items-center gap-4 mb-8 pb-4 border-b border-white/10"
+                >
                   <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
                     <section.icon className="w-4 h-4 text-brand-gold" />
                   </div>
@@ -185,10 +230,13 @@ export function PrivacyPolicy() {
                     <span className="text-brand-gold mr-3">0{index + 1}.</span>
                     {section.title}
                   </h2>
-                </div>
-                <p className="font-body text-lg text-gray-300 leading-[1.8] font-light max-w-2xl">
+                </motion.div>
+                <motion.p 
+                  variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
+                  className="font-body text-lg text-gray-300 leading-relaxed md:leading-[2] font-light max-w-2xl"
+                >
                   {section.content}
-                </p>
+                </motion.p>
               </motion.div>
             ))}
           </div>

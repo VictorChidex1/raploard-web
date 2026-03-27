@@ -59,6 +59,10 @@ export default {
   			body: [
   				'Inter',
   				'sans-serif'
+  			],
+  			serif: [
+  				'Playfair Display',
+  				'serif'
   			]
   		},
   		borderRadius: {
