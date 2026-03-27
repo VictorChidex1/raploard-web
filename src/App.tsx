@@ -7,6 +7,7 @@ import { Store } from "./pages/Store";
 import { About } from "./pages/About";
 import { Contact } from "./pages/Contact";
 import { PrivacyPolicy } from "./pages/PrivacyPolicy";
+import { TermsOfService } from "./pages/TermsOfService";
 
 import { ScrollToTop } from "./components/ui/ScrollToTop";
 
@@ -22,6 +23,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
 
         {/* Redirect unknown routes to home */}
         <Route path="*" element={<Home />} />
