@@ -1,10 +1,58 @@
+import { useState } from "react";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import { Button } from "../components/ui/Button";
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { Mail, Phone, MapPin, Send, Loader2, Check } from "lucide-react";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../lib/firebase";
 
 export function Contact() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "Booking Inquiry",
+    message: "",
+  });
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.email || !formData.message) return;
+
+    setStatus("loading");
+
+    try {
+      await addDoc(collection(db, "contacts"), {
+        ...formData,
+        timestamp: serverTimestamp(),
+      });
+      setStatus("success");
+      setFormData({
+        name: "",
+        email: "",
+        subject: "Booking Inquiry",
+        message: "",
+      });
+      setTimeout(() => setStatus("idle"), 3000);
+    } catch (error) {
+      console.error("Error submitting contact form: ", error);
+      setStatus("error");
+      setTimeout(() => setStatus("idle"), 3000);
+    }
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   return (
     <div className="min-h-screen bg-brand-dark pt-20">
       <Navbar />
@@ -79,7 +127,7 @@ export function Contact() {
             transition={{ delay: 0.4 }}
             className="w-full md:w-2/3"
           >
-            <form className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-xs uppercase tracking-widest text-gray-400">
@@ -87,7 +135,12 @@ export function Contact() {
                   </label>
                   <input
                     type="text"
-                    className="w-full bg-white/5 border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-brand-gold transition-colors"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    disabled={status === "loading" || status === "success"}
+                    className="w-full bg-white/5 border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-brand-gold transition-colors disabled:opacity-50"
                     placeholder="John Doe"
                   />
                 </div>
@@ -97,7 +150,12 @@ export function Contact() {
                   </label>
                   <input
                     type="email"
-                    className="w-full bg-white/5 border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-brand-gold transition-colors"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    disabled={status === "loading" || status === "success"}
+                    className="w-full bg-white/5 border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-brand-gold transition-colors disabled:opacity-50"
                     placeholder="john@example.com"
                   />
                 </div>
@@ -107,10 +165,22 @@ export function Contact() {
                 <label className="text-xs uppercase tracking-widest text-gray-400">
                   Subject
                 </label>
-                <select className="w-full bg-white/5 border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-brand-gold transition-colors">
-                  <option className="bg-brand-dark">Booking Inquiry</option>
-                  <option className="bg-brand-dark">Press / Media</option>
-                  <option className="bg-brand-dark">Fan Mail</option>
+                <select
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  disabled={status === "loading" || status === "success"}
+                  className="w-full bg-white/5 border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-brand-gold transition-colors disabled:opacity-50"
+                >
+                  <option className="bg-brand-dark" value="Booking Inquiry">
+                    Booking Inquiry
+                  </option>
+                  <option className="bg-brand-dark" value="Press / Media">
+                    Press / Media
+                  </option>
+                  <option className="bg-brand-dark" value="Fan Mail">
+                    Fan Mail
+                  </option>
                 </select>
               </div>
 
@@ -119,15 +189,37 @@ export function Contact() {
                   Message
                 </label>
                 <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                  disabled={status === "loading" || status === "success"}
                   rows={6}
-                  className="w-full bg-white/5 border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-brand-gold transition-colors"
+                  className="w-full bg-white/5 border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-brand-gold transition-colors disabled:opacity-50"
                   placeholder="Tell us about your event..."
                 />
               </div>
 
-              <Button size="lg" className="w-full">
-                <Send className="w-4 h-4 mr-2" />
-                Send Message
+              <Button
+                size="lg"
+                className="w-full"
+                type="submit"
+                disabled={status === "loading" || status === "success"}
+              >
+                {status === "loading" ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : status === "success" ? (
+                  <Check className="w-4 h-4 mr-2" />
+                ) : (
+                  <Send className="w-4 h-4 mr-2" />
+                )}
+                {status === "loading"
+                  ? "Sending..."
+                  : status === "success"
+                  ? "Message Sent"
+                  : status === "error"
+                  ? "Error Sending"
+                  : "Send Message"}
               </Button>
             </form>
           </motion.div>

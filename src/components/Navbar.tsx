@@ -10,6 +10,7 @@ import {
   Home,
   Video,
   ShoppingBag,
+  Ticket, // Added Ticket icon for Tour
 } from "lucide-react";
 import { cn } from "../lib/utils";
 
@@ -18,6 +19,7 @@ const navLinks = [
   { name: "Music", path: "/music", icon: Music2 },
   { name: "Videos", path: "/videos", icon: Video },
   { name: "Store", path: "/store", icon: ShoppingBag }, // NEW: Added Store link
+  { name: "Tour", path: "/tour", icon: Ticket }, // Added Tour link
   { name: "About", path: "/about", icon: User },
   { name: "Contact", path: "/contact", icon: Mail },
 ];
@@ -47,10 +49,10 @@ export function Navbar() {
         animate={{ y: 0 }}
         transition={{ duration: 0.5 }}
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent pt-[env(safe-area-inset-top)]",
+          "fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent pt-[calc(env(safe-area-inset-top)+2rem)]",
           isScrolled
-            ? "bg-brand-dark/80 backdrop-blur-xl border-white/5 pb-3"
-            : "bg-transparent pb-6"
+            ? "bg-brand-dark/80 backdrop-blur-xl border-white/5 pb-4"
+            : "bg-transparent pb-8"
         )}
       >
         <div className="container mx-auto px-6 flex items-center justify-between">

@@ -1,13 +1,64 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow anyone to subscribe to the newsletter (write-only)
-    match /newsletter/{document} {
-      allow write: if true;
-      allow read: if false; // Protect user data: only admins can read via Firebase Console
+
+    // ─── Helper Functions ────────────────────────────────────────────────────
+
+    // Validates a basic email format: must contain @ and a domain extension
+    function isValidEmail(email) {
+      return email is string
+          && email.size() >= 5
+          && email.size() <= 254
+          && email.matches('^[^@]+@[^@]+\\.[^@]+$');
     }
-    
-    // Default deny for any other future collections
+
+    // Prevents data bloat - checks a string is non-empty and within size bounds
+    function isValidString(value, minLen, maxLen) {
+      return value is string
+          && value.size() >= minLen
+          && value.size() <= maxLen;
+    }
+
+    // Ensures only the expected fields are submitted (no extra spam payload)
+    function hasOnlyKeys(data, keys) {
+      return data.keys().toSet() == keys.toSet();
+    }
+
+
+    // ─── Newsletter Collection (Footer + RSVP Modal) ─────────────────────────
+    match /newsletter/{document} {
+      // Only allow document creation, never read/update/delete from the client
+      allow create: if isValidEmail(request.resource.data.email)
+                    // Allow only these 3 fields — nothing more, nothing less
+                    && hasOnlyKeys(request.resource.data, ['email', 'timestamp', 'source'])
+                    // Ensure 'source' is a recognized value, not arbitrary spam
+                    && request.resource.data.source in ['website_footer', 'rsvp_modal']
+                    // Timestamp must be the real server time — no fake entries
+                    && request.resource.data.timestamp is timestamp;
+
+      allow read, update, delete: if false;
+    }
+
+
+    // ─── Contacts Collection (Contact Form) ──────────────────────────────────
+    match /contacts/{document} {
+      allow create: if isValidEmail(request.resource.data.email)
+                    // Only permit the exact 5 fields the form sends
+                    && hasOnlyKeys(request.resource.data, ['name', 'email', 'subject', 'message', 'timestamp'])
+                    // Name: 2–80 characters
+                    && isValidString(request.resource.data.name, 2, 80)
+                    // Message: 10–2000 characters (prevents one-word spam)
+                    && isValidString(request.resource.data.message, 10, 2000)
+                    // Subject must be one of the dropdown options only
+                    && request.resource.data.subject in ['Booking Inquiry', 'Press / Media', 'Fan Mail']
+                    // Timestamp must be the real server time — no forged dates
+                    && request.resource.data.timestamp is timestamp;
+
+      allow read, update, delete: if false;
+    }
+
+
+    // ─── Default Rule: Everything Else Is Locked ────────────────────────────
     match /{document=**} {
       allow read, write: if false;
     }
