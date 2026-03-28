@@ -17,6 +17,13 @@ interface Album {
 
 const albums: Album[] = [
   {
+    title: "Son",
+    type: "Single",
+    releaseDate: "Mar 21, 2026",
+    image: "/raploard-son.jpg",
+    streamLink: "https://ffm.to/son-malcolmx",
+  },
+  {
     title: "Carry Go",
     type: "Single",
     releaseDate: "Dec 15, 2025",

@@ -23,6 +23,24 @@ interface Release {
 
 const releases: Release[] = [
   {
+    title: "RapLoard",
+    highlight: "SON",
+    tag: "New Release",
+    description: `Afrobeats powerhouse RapLoard ushers in the festive season with "Carry Go," his essential December jam. Built on an infectious rhythm and an undeniable call to celebration, the track is a pure energy boost. It’s a command to dance, a soundtrack for merriment, and RapLoard's vibrant gift to the global audience. Let the rhythm move you to carry go and celebrate.`,
+    image: "/raploard-son.jpg",
+    releaseDate: "Mar 21, 2026",
+    links: {
+      stream: "https://Ffm.to/son-malcolmx",
+      spotify:
+        "https://open.spotify.com/track/778tflTEtXt9sEf4Hs2MDy?si=fea6d64bbf144a1c",
+      apple:
+        "https://music.apple.com/ng/album/son/1880018343?i=1880018344&at=1001lwQy&ct=FFM_9f440a99ed3ccb980941d84f6d733bf1&ls=1&uo=4",
+      youtube: "https://www.youtube.com/watch?v=sSmbe38S4UE",
+      audiomack:
+        "https://audiomack.com/raploard/song/carry-go?utm_source=featurefm&utm_campaign=onelink&utm_medium=website&ffm=FFM_29b2095c911b1d7f9b36a43bb439a6c8",
+    },
+  },
+  {
     title: "Carry",
     highlight: "Go",
     tag: "New Release",
