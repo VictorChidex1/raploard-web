@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Play, Music2, ExternalLink } from "lucide-react";
 import { Button } from "./ui/Button";
 import { VideoModal } from "./ui/VideoModal";
+import { SpotifyPlayer } from "./SpotifyPlayer";
 
 interface Release {
   title: string;
@@ -246,6 +247,11 @@ export function LatestRelease() {
                   Audiomack
                 </a>
               </div>
+
+              {/* Spotify embedded player — only on the latest release (index 0)  */}
+              {/* Reads live from Firestore `integrations/spotify`, updated every  */}
+              {/* 24h by the Cloud Function. Auto-switches when a new song drops.  */}
+              {index === 0 && <SpotifyPlayer />}
             </div>
           </motion.div>
         ))}

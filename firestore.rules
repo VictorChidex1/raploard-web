@@ -58,6 +58,17 @@ service cloud.firestore {
     }
 
 
+    // ─── Integrations Collection (Written by Cloud Functions via Admin SDK) ──
+    // The Spotify sync function writes to integrations/spotify every 24 hours.
+    // The front-end needs to read this doc to power the embedded player.
+    // Write is blocked from the client — only the Admin SDK (Cloud Functions)
+    // can write here, as Admin SDK bypasses these rules entirely.
+    match /integrations/{document} {
+      allow read: if true;   // Public read — Spotify track IDs are not sensitive
+      allow write: if false; // Only Cloud Functions (Admin SDK) may write
+    }
+
+
     // ─── Default Rule: Everything Else Is Locked ────────────────────────────
     match /{document=**} {
       allow read, write: if false;
