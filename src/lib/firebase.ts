@@ -19,14 +19,8 @@ export const db = getFirestore(app);
 export const analytics = getAnalytics(app);
 
 // ─── Local Emulator Connection ────────────────────────────────────────────────
-// When VITE_USE_EMULATOR=true in your .env, the client connects to the local
-// Firestore emulator (port 8080) instead of production. This MUST be called
-// before any Firestore read/write — module-level execution guarantees that.
-//
-// To test with the emulator:   set VITE_USE_EMULATOR=true in .env, restart dev
-// To test against production:  set VITE_USE_EMULATOR=false (or remove the line)
-// Production builds:           VITE_USE_EMULATOR is never set — this never runs
-if (import.meta.env.VITE_USE_EMULATOR === "true") {
+// Protect production: Only connect to the emulator in development mode.
+if (import.meta.env.DEV && import.meta.env.VITE_USE_EMULATOR === "true") {
   connectFirestoreEmulator(db, "127.0.0.1", 8080);
   console.info("[Firebase] 🔧 Connected to LOCAL Firestore Emulator (port 8080)");
 }
