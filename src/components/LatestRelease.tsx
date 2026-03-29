@@ -24,8 +24,8 @@ interface Release {
 
 const releases: Release[] = [
   {
-    title: "RapLoard",
-    highlight: "SON",
+    title: "SON",
+    highlight: "",
     tag: "New Release",
     description: `Afrobeats powerhouse RapLoard ushers in the festive season with "Carry Go," his essential December jam. Built on an infectious rhythm and an undeniable call to celebration, the track is a pure energy boost. It’s a command to dance, a soundtrack for merriment, and RapLoard's vibrant gift to the global audience. Let the rhythm move you to carry go and celebrate.`,
     image: "/raploard-son.jpg",
