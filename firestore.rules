@@ -24,8 +24,13 @@ service cloud.firestore {
       return data.keys().toSet() == keys.toSet();
     }
 
+    // Returns true for any authenticated Firebase user.
+    // The Firebase Console is the ONLY place to create users — no self-registration
+    // exists on this site — making this effectively admin-only access.
+    function isAdmin() {
+      return request.auth != null;
+    }
 
-    // ─── Newsletter Collection (Footer + RSVP Modal) ─────────────────────────
     match /newsletter/{document} {
       // Only allow document creation, never read/update/delete from the client
       allow create: if isValidEmail(request.resource.data.email)
@@ -36,7 +41,8 @@ service cloud.firestore {
                     // Timestamp must be the real server time — no fake entries
                     && request.resource.data.timestamp is timestamp;
 
-      allow read, update, delete: if false;
+      allow read: if isAdmin();       // Admin dashboard reads
+      allow update, delete: if false;
     }
 
 
@@ -54,7 +60,8 @@ service cloud.firestore {
                     // Timestamp must be the real server time — no forged dates
                     && request.resource.data.timestamp is timestamp;
 
-      allow read, update, delete: if false;
+      allow read: if isAdmin();       // Admin dashboard reads
+      allow update, delete: if false;
     }
 
 

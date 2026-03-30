@@ -9,6 +9,9 @@ import { Contact } from "./pages/Contact";
 import { PrivacyPolicy } from "./pages/PrivacyPolicy";
 import { TermsOfService } from "./pages/TermsOfService";
 import { Tour } from "./pages/Tour";
+import { Admin } from "./pages/Admin";
+import { AdminLogin } from "./pages/AdminLogin";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 import { ScrollToTop } from "./components/ui/ScrollToTop";
 
@@ -26,6 +29,17 @@ function App() {
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/tour" element={<Tour />} />
+
+        {/* ── The Vault (Admin) — Dark routes, no public links ── */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <Admin />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Redirect unknown routes to home */}
         <Route path="*" element={<Home />} />
