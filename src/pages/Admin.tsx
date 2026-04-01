@@ -81,7 +81,7 @@ function useAnimatedCounter(target: number, durationMs = 1200): number {
   return count;
 }
 
-// ─── Helper: Live Clock ────────────────────────────────────────────────────
+// ─── Helper: Live Clock Component ──────────────────────────────────────────
 
 function useLiveClock() {
   const [now, setNow] = useState(new Date());
@@ -90,6 +90,32 @@ function useLiveClock() {
     return () => clearInterval(t);
   }, []);
   return now;
+}
+
+function LiveClockDisplay() {
+  const clock = useLiveClock();
+  const clockStr = clock.toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+  const dateStr = clock.toLocaleDateString("en-GB", {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).toUpperCase();
+
+  return (
+    <div className="hidden lg:flex items-center gap-4">
+      <p className="font-header text-white/20 text-[10px] tracking-[0.2em]">
+        {dateStr}
+      </p>
+      <p className="font-header text-brand-gold/50 text-[10px] tracking-[0.15em] tabular-nums">
+        {clockStr}
+      </p>
+    </div>
+  );
 }
 
 // ─── Helper: CSV Export ────────────────────────────────────────────────────
@@ -151,17 +177,20 @@ function MetricCard({
   label,
   value,
   sublabel,
+  onClick,
 }: {
   label: string;
   value: number;
   sublabel: string;
+  onClick?: () => void;
 }) {
   const count = useAnimatedCounter(value);
   return (
     <motion.div
+      onClick={onClick}
       whileHover={{ y: -2 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className="relative bg-white/[0.015] border border-white/[0.04] rounded-sm p-6 overflow-hidden backdrop-blur-xl group"
+      className={`relative bg-white/[0.015] border border-white/[0.04] rounded-sm p-6 overflow-hidden backdrop-blur-xl group ${onClick ? "cursor-pointer" : ""}`}
       style={{ borderTop: "1px solid rgba(255, 215, 0, 0.15)" }}
     >
       {/* Dynamic Gold Glow on Hover */}
@@ -270,7 +299,6 @@ function formatDate(ts: Timestamp | undefined): string {
 
 export function Admin() {
   const navigate = useNavigate();
-  const clock = useLiveClock();
 
   const [activeTab, setActiveTab] = useState<ActiveTab>("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -402,18 +430,7 @@ export function Admin() {
     );
   }
 
-  // ─── Clock format ───────────────────────────────────────────────────
-  const clockStr = clock.toLocaleTimeString("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
-  const dateStr = clock.toLocaleDateString("en-GB", {
-    weekday: "short",
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).toUpperCase();
+
 
   // ─── Content sections ─────────────────────────────────────────────────
 
@@ -425,19 +442,25 @@ export function Admin() {
             label="Newsletter"
             value={newsletterSubs.length}
             sublabel="Total subscribers"
+            onClick={() => setActiveTab("subscribers")}
           />
           <MetricCard
             label="Tour RSVPs"
             value={rsvps.length}
             sublabel="Live Circuit interest"
+            onClick={() => setActiveTab("rsvps")}
           />
           <MetricCard
             label="Inquiries"
             value={contacts.length}
             sublabel="Contact form total"
+            onClick={() => setActiveTab("contacts")}
           />
-          <div
-            className="relative bg-white/[0.025] border border-white/[0.06] rounded-sm p-6 overflow-hidden"
+          <motion.div
+            onClick={() => setActiveTab("spotify")}
+            whileHover={{ y: -2 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="cursor-pointer relative bg-white/[0.025] border border-white/[0.06] rounded-sm p-6 overflow-hidden hover:bg-white/[0.04] transition-colors"
             style={{ borderTop: "1px solid rgba(255, 215, 0, 0.15)" }}
           >
             <p className="font-header text-white/35 text-[10px] tracking-[0.25em] uppercase mb-3">
@@ -455,7 +478,7 @@ export function Admin() {
             ) : (
               <p className="text-white/20 text-xs mt-2">No data synced</p>
             )}
-          </div>
+          </motion.div>
         </div>
 
         {/* Recent activity */}
@@ -772,11 +795,8 @@ export function Admin() {
       </AnimatePresence>
 
       {/* ── Sidebar ───────────────────────────────────────────────────── */}
-      <motion.aside
-        initial={false}
-        animate={{ x: sidebarOpen ? 0 : "-100%" }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="fixed top-0 left-0 h-full w-60 bg-[#0a0a0c] border-r border-white/[0.05] z-30 flex flex-col lg:relative lg:translate-x-0 lg:animate-none"
+      <aside
+        className={`fixed top-0 left-0 h-full w-60 bg-[#0a0a0c] border-r border-white/[0.05] z-30 flex flex-col transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         {/* Branding */}
         <Link to="/" className="block">
@@ -857,7 +877,7 @@ export function Admin() {
             Logout
           </button>
         </div>
-      </motion.aside>
+      </aside>
 
       {/* ── Main area ─────────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col min-w-0 lg:ml-0">
@@ -884,14 +904,7 @@ export function Admin() {
           </Link>
 
           {/* Clock (desktop) */}
-          <div className="hidden lg:flex items-center gap-4">
-            <p className="font-header text-white/20 text-[10px] tracking-[0.2em]">
-              {dateStr}
-            </p>
-            <p className="font-header text-brand-gold/50 text-[10px] tracking-[0.15em] tabular-nums">
-              {clockStr}
-            </p>
-          </div>
+          <LiveClockDisplay />
 
           {/* Live indicator */}
           <div className="flex items-center gap-1.5 ml-auto">
