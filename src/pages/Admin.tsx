@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { collection, onSnapshot, query, orderBy, Timestamp, doc } from "firebase/firestore";
 import { signOut } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
@@ -17,6 +17,7 @@ import {
   WifiOff,
 } from "lucide-react";
 import { db, auth } from "../lib/firebase";
+import { CONFIG } from "../config";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -120,6 +121,32 @@ const NAV_ITEMS: { id: ActiveTab; label: string; Icon: React.ElementType }[] = [
 
 // ─── Sub-components ───────────────────────────────────────────────────────
 
+// ─── Decorative Sparkline ──────────────────────────────────────────────────
+function SparklinePulse() {
+  return (
+    <svg
+      className="absolute bottom-0 right-0 w-full h-1/2 opacity-10 pointer-events-none"
+      viewBox="0 0 100 30"
+      preserveAspectRatio="none"
+      fill="none"
+    >
+      <motion.path
+        d="M0 30 Q10 25 20 28 T40 15 T60 20 T80 5 T100 15 L100 30 L0 30 Z"
+        fill="url(#gold-gradient)"
+        initial={{ y: 10, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
+      />
+      <defs>
+        <linearGradient id="gold-gradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ffd700" />
+          <stop offset="100%" stopColor="transparent" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+}
+
 function MetricCard({
   label,
   value,
@@ -131,17 +158,29 @@ function MetricCard({
 }) {
   const count = useAnimatedCounter(value);
   return (
-    <div
-      className="relative bg-white/[0.025] border border-white/[0.06] rounded-sm p-6 overflow-hidden"
+    <motion.div
+      whileHover={{ y: -2 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      className="relative bg-white/[0.015] border border-white/[0.04] rounded-sm p-6 overflow-hidden backdrop-blur-xl group"
       style={{ borderTop: "1px solid rgba(255, 215, 0, 0.15)" }}
     >
-      <div className="absolute top-0 right-0 w-32 h-32 bg-brand-gold/[0.03] rounded-full blur-2xl -translate-y-8 translate-x-8 pointer-events-none" />
-      <p className="font-header text-white/35 text-[10px] tracking-[0.25em] uppercase mb-3">
+      {/* Dynamic Gold Glow on Hover */}
+      <div className="absolute top-0 right-0 w-48 h-48 bg-brand-gold/[0.02] rounded-full blur-3xl -translate-y-12 translate-x-12 pointer-events-none transition-transform duration-700 ease-out group-hover:scale-150 group-hover:bg-brand-gold/[0.04]" />
+      
+      {/* Pulse Line */}
+      <SparklinePulse />
+
+      <p className="font-header text-white/35 text-[10px] tracking-[0.25em] uppercase mb-3 relative z-10 text-shadow-sm">
         {label}
       </p>
-      <p className="font-header text-white text-5xl tabular-nums">{count}</p>
-      <p className="text-white/25 text-xs mt-2">{sublabel}</p>
-    </div>
+      {/* Using Editorial Typography (Playfair Display) for Numbers */}
+      <p className="font-serif italic text-white text-6xl tabular-nums tracking-tight relative z-10">
+        {count}
+      </p>
+      <p className="text-white/25 text-xs mt-3 relative z-10">
+        {sublabel}
+      </p>
+    </motion.div>
   );
 }
 
@@ -185,16 +224,20 @@ function TableRow({
   isExpanded?: boolean;
 }) {
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      whileHover={{ x: 4, backgroundColor: "rgba(255,255,255,0.03)" }}
+      transition={{ type: "spring", stiffness: 350, damping: 25 }}
       onClick={onClick}
-      className={`grid px-4 py-3.5 border-b border-white/[0.04] text-sm transition-colors duration-150 ${
-        onClick
-          ? "cursor-pointer hover:bg-white/[0.02]"
-          : ""
+      className={`grid px-4 py-4 border-b border-white/[0.03] text-sm transition-colors duration-150 relative overflow-hidden group ${
+        onClick ? "cursor-pointer" : ""
       } ${isExpanded ? "bg-white/[0.02]" : ""}`}
     >
+      {/* Subtle gold line accent that slides in on hover */}
+      <div className="absolute left-0 top-0 bottom-0 w-px bg-brand-gold/0 group-hover:bg-brand-gold/60 transition-colors duration-300" />
       {children}
-    </div>
+    </motion.div>
   );
 }
 
@@ -593,64 +636,118 @@ export function Admin() {
     const coverImg = rel?.images?.[0]?.url;
 
     return (
-      <div className="space-y-4">
-        <div
-          className="bg-white/[0.025] border border-white/[0.06] rounded-sm p-6"
-          style={{ borderTop: "1px solid rgba(255, 215, 0, 0.15)" }}
-        >
-          <p className="font-header text-white/35 text-[10px] tracking-[0.25em] uppercase mb-5">
-            Current Sync Data
-          </p>
-          {rel ? (
-            <div className="flex gap-5 items-start">
-              {coverImg && (
-                <img
-                  src={coverImg}
-                  alt={rel.name}
-                  className="w-20 h-20 rounded-sm object-cover shrink-0"
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-6">
+          {/* Main Cinematic Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="group relative bg-[#0a0a0c] border border-white/[0.04] rounded-sm overflow-hidden min-h-[300px] flex flex-col justify-end p-8 isolate"
+            style={{ borderTop: "1px solid rgba(255, 215, 0, 0.15)" }}
+          >
+            {/* Cinematic Background Layer */}
+            {coverImg && (
+              <>
+                <div
+                  className="absolute inset-0 bg-cover bg-center opacity-30 transition-transform duration-1000 ease-out group-hover:scale-110 group-hover:opacity-40"
+                  style={{ backgroundImage: `url(${coverImg})` }}
                 />
+                <div className="absolute inset-0 backdrop-blur-3xl bg-brand-dark/40" />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/80 to-transparent" />
+              </>
+            )}
+
+            <div className="relative z-10">
+              <p className="font-header text-brand-gold drop-shadow-md text-[10px] tracking-[0.3em] uppercase mb-1">
+                Live Data Feed
+              </p>
+              {rel ? (
+                <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-end mt-4">
+                  {coverImg && (
+                    <motion.img
+                      whileHover={{ scale: 1.05 }}
+                      src={coverImg}
+                      alt={rel.name}
+                      className="w-32 h-32 rounded-sm object-cover shrink-0 shadow-2xl border border-white/10"
+                    />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-header text-white text-3xl sm:text-4xl uppercase tracking-tiight leading-none mb-2 text-shadow-sm">
+                      {rel.name}
+                    </h3>
+                    <p className="text-white/60 text-sm font-medium tracking-wide">
+                      {rel.artistName}
+                    </p>
+                    <div className="flex items-center gap-3 mt-3 text-white/30 text-xs font-header uppercase tracking-widest">
+                      <span>{rel.type}</span>
+                      <span className="w-1 h-1 rounded-full bg-brand-gold/50" />
+                      <span>{rel.releaseDate}</span>
+                    </div>
+
+                    <a
+                      href={rel.spotifyUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 mt-5 text-brand-gold/80 hover:text-brand-gold text-xs font-header tracking-[0.2em] uppercase transition-colors"
+                    >
+                      <Music2 className="w-4 h-4" />
+                      Verify on Spotify
+                    </a>
+                  </div>
+                </div>
+              ) : (
+                <EmptyState message="No Spotify data synced yet" />
               )}
-              <div className="min-w-0">
-                <h3 className="font-header text-white text-2xl uppercase">{rel.name}</h3>
-                <p className="text-white/40 text-sm capitalize">{rel.type} · {rel.releaseDate}</p>
-                <p className="text-white/25 text-xs mt-1">Artist: {rel.artistName}</p>
-                <p className="text-white/25 text-xs mt-0.5 font-mono break-all">
-                  Track ID: {rel.spotifyId}
-                </p>
-                <a
-                  href={rel.spotifyUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 mt-3 text-brand-gold/70 hover:text-brand-gold text-xs font-header tracking-wider uppercase transition-colors"
-                >
-                  <Music2 className="w-3 h-3" />
-                  Open on Spotify
-                </a>
-              </div>
             </div>
-          ) : (
-            <EmptyState message="No Spotify data synced yet" />
-          )}
+          </motion.div>
+
+          {/* Sync Metadata Panel */}
+          <div className="bg-white/[0.015] border border-white/[0.04] rounded-sm p-6 backdrop-blur-md flex flex-col">
+            <h4 className="font-header text-white/35 text-[10px] tracking-[0.2em] uppercase mb-6">
+              System Status
+            </h4>
+            
+            <div className="flex-1 space-y-6">
+              <div>
+                <p className="text-white/20 text-[10px] tracking-widest font-header uppercase mb-1">Status</p>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-brand-gold animate-pulse" />
+                  <p className="text-white/80 text-sm font-medium">Active Sync</p>
+                </div>
+              </div>
+
+              {sync && (
+                <>
+                  <div>
+                    <p className="text-white/20 text-[10px] tracking-widest font-header uppercase mb-1">Last Updated</p>
+                    <p className="text-white/80 text-sm font-medium tracking-wide">{formatDate(sync.syncedAt)}</p>
+                  </div>
+                  <div>
+                    <p className="text-white/20 text-[10px] tracking-widest font-header uppercase mb-1">Source Trigger</p>
+                    <p className="text-brand-gold/70 text-xs font-mono">{sync.source}</p>
+                  </div>
+                </>
+              )}
+              
+              {rel?.spotifyId && (
+                <div>
+                  <p className="text-white/20 text-[10px] tracking-widest font-header uppercase mb-1">Active Track ID</p>
+                  <code className="font-mono text-white/50 text-xs block truncate bg-black/30 p-2 rounded border border-white/5">
+                    {rel.spotifyId}
+                  </code>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        {sync && (
-          <div className="bg-white/[0.02] border border-white/[0.05] rounded-sm px-5 py-4">
-            <p className="font-header text-white/35 text-[10px] tracking-[0.25em] uppercase mb-2">
-              Sync Metadata
-            </p>
-            <p className="text-white/40 text-xs">
-              Last synced: {formatDate(sync.syncedAt)}
-            </p>
-            <p className="text-white/25 text-xs mt-0.5">Source: {sync.source}</p>
+        <div className="bg-brand-gold/[0.02] border border-brand-gold/[0.05] rounded-sm px-6 py-5 flex items-start gap-4">
+          <div className="p-2 bg-brand-gold/10 rounded-full mt-0.5">
+             <LayoutDashboard className="w-4 h-4 text-brand-gold/80" />
           </div>
-        )}
-
-        <div className="bg-brand-gold/5 border border-brand-gold/15 rounded-sm px-5 py-4">
-          <p className="text-brand-gold/60 text-xs leading-relaxed">
-            <span className="font-header uppercase tracking-wider text-brand-gold/80">To update manually:</span>{" "}
-            Go to Firebase Console → Firestore → integrations/spotify → edit the{" "}
-            <code className="font-mono bg-white/5 px-1 rounded text-[10px]">latestRelease.spotifyId</code> field
-            with the new track ID from Spotify. The player on the homepage updates instantly.
+          <p className="text-brand-gold/60 text-xs leading-relaxed max-w-3xl">
+            <span className="font-header text-brand-gold/80 uppercase tracking-widest block mb-1">Manual Override Protocol</span>
+            To instantly bypass the automated 24-hour sync cycle, locate the <strong className="text-white/60 font-mono">integrations/spotify</strong> document inside the Firebase Data Console and manually overwrite the <strong className="text-white/60 font-mono">spotifyId</strong> field. The global homepage player will inherit the new track universally across all connected client devices without requiring a full infrastructure rebuild.
           </p>
         </div>
       </div>
@@ -682,24 +779,48 @@ export function Admin() {
         className="fixed top-0 left-0 h-full w-60 bg-[#0a0a0c] border-r border-white/[0.05] z-30 flex flex-col lg:relative lg:translate-x-0 lg:animate-none"
       >
         {/* Branding */}
-        <div
-          className="px-6 py-7 border-b border-white/[0.05]"
-          style={{ borderBottom: "1px solid rgba(255,215,0,0.08)" }}
-        >
-          <div className="flex items-center gap-2 mb-0.5">
-            <span
-              className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                isLive
-                  ? "bg-brand-gold animate-pulse"
-                  : "bg-white/20"
-              }`}
-            />
-            <p className="font-header text-brand-gold text-[9px] tracking-[0.3em] uppercase">
-              RAPLOARD
-            </p>
-          </div>
-          <p className="font-header text-white text-xl uppercase">The Vault</p>
-        </div>
+        <Link to="/" className="block">
+          <motion.div
+            whileHover={{ backgroundColor: "rgba(255,255,255,0.02)" }}
+            className="px-6 py-7 border-b border-white/[0.05] flex items-center justify-between group transition-colors relative"
+            style={{ borderBottom: "1px solid rgba(255,215,0,0.08)" }}
+            title="Return to Public Site"
+          >
+            <div>
+              <div className="flex items-center gap-2 mb-0.5">
+                <span
+                  className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                    isLive
+                      ? "bg-brand-gold animate-pulse"
+                      : "bg-white/20"
+                  }`}
+                />
+                <p className="font-header text-brand-gold text-[9px] tracking-[0.3em] uppercase">
+                  RAPLOARD
+                </p>
+              </div>
+              <p className="font-header text-white text-xl uppercase">The Vault</p>
+              
+              {/* Subtle hover tooltip integrated into flow */}
+              <p className="absolute bottom-2 left-6 text-[8px] text-brand-gold/60 tracking-widest uppercase font-header opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                Return to Surface →
+              </p>
+            </div>
+
+            {/* Circular Image Logo */}
+            <motion.div 
+               whileHover={{ scale: 1.1, rotate: 5 }}
+               transition={{ type: "spring", stiffness: 400, damping: 17 }}
+               className="shrink-0"
+            >
+              <img 
+                src={CONFIG.assets.heroImage} 
+                alt="Raploard" 
+                className="w-10 h-10 rounded-full object-cover border border-brand-gold/30 shadow-[0_0_15px_rgba(255,215,0,0.1)] grayscale group-hover:grayscale-0 transition-all duration-500"
+              />
+            </motion.div>
+          </motion.div>
+        </Link>
 
         {/* Navigation */}
         <nav className="flex-1 px-3 py-4 space-y-0.5">
@@ -753,9 +874,14 @@ export function Admin() {
             <span className="w-5 h-px bg-white/40" />
           </button>
 
-          <div className="flex items-center gap-2 lg:hidden">
+          <Link to="/" className="flex items-center gap-3 lg:hidden">
+            <img 
+              src={CONFIG.assets.heroImage} 
+              alt="Raploard" 
+              className="w-7 h-7 rounded-full object-cover border border-brand-gold/30 grayscale"
+            />
             <p className="font-header text-white text-sm uppercase tracking-wider">The Vault</p>
-          </div>
+          </Link>
 
           {/* Clock (desktop) */}
           <div className="hidden lg:flex items-center gap-4">
