@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { collection, onSnapshot, query, orderBy, Timestamp, doc } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy, Timestamp, doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,6 +15,9 @@ import {
   ChevronUp,
   Wifi,
   WifiOff,
+  Loader2,
+  Check,
+  Link as LinkIcon
 } from "lucide-react";
 import { db, auth } from "../lib/firebase";
 import { CONFIG } from "../config";
@@ -308,6 +311,66 @@ export function Admin() {
   const [spotify, setSpotify] = useState<SpotifyDoc | null>(null);
   const [isLive, setIsLive] = useState(false);
   const [expandedContact, setExpandedContact] = useState<string | null>(null);
+
+  // Spotify Override State
+  const [overrideUrl, setOverrideUrl] = useState("");
+  const [overrideStatus, setOverrideStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+
+  const handleSpotifyOverride = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!overrideUrl) return;
+
+    setOverrideStatus("loading");
+
+    try {
+      let spotifyId = "";
+      let type = "single";
+
+      if (overrideUrl.includes("track/")) {
+        spotifyId = overrideUrl.split("track/")[1]?.split("?")[0] || "";
+        type = "single";
+      } else if (overrideUrl.includes("album/")) {
+        spotifyId = overrideUrl.split("album/")[1]?.split("?")[0] || "";
+        type = "album";
+      } else {
+        spotifyId = overrideUrl.trim();
+      }
+
+      if (!spotifyId || spotifyId.length < 10) {
+        throw new Error("Invalid Spotify Track/Album URI");
+      }
+
+      await setDoc(
+        doc(db, "integrations", "spotify"),
+        {
+          latestRelease: {
+            spotifyId,
+            type,
+            artistName: "Raploard",
+            name: "Manual Override",
+            releaseDate: new Date().toISOString().split("T")[0],
+            albumId: spotifyId,
+            images: [{ url: "https://i.scdn.co/image/ab6761610000e5ebb50aab064c153ff29df3408a" }] // Optional generic fallback
+          },
+          _sync: {
+            syncedAt: serverTimestamp(),
+            source: "manual_override",
+          },
+        },
+        { merge: true }
+      );
+
+      setOverrideStatus("success");
+      setOverrideUrl("");
+      setTimeout(() => setOverrideStatus("idle"), 3000);
+    } catch (err) {
+      console.error("Override failed:", err);
+      setOverrideStatus("error");
+      setTimeout(() => setOverrideStatus("idle"), 3000);
+    }
+  };
 
   // Derived data
   const newsletterSubs = subscribers.filter((s) => s.source === "website_footer");
@@ -764,14 +827,41 @@ export function Admin() {
           </div>
         </div>
 
-        <div className="bg-brand-gold/[0.02] border border-brand-gold/[0.05] rounded-sm px-6 py-5 flex items-start gap-4">
-          <div className="p-2 bg-brand-gold/10 rounded-full mt-0.5">
-             <LayoutDashboard className="w-4 h-4 text-brand-gold/80" />
+        <div className="bg-white/[0.015] border border-white/[0.04] rounded-sm p-6 backdrop-blur-md">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-brand-gold/10 rounded-full">
+               <LinkIcon className="w-4 h-4 text-brand-gold" />
+            </div>
+            <div>
+              <h4 className="font-header text-white text-sm uppercase tracking-widest">
+                Manual Override Protocol
+              </h4>
+              <p className="text-white/40 text-xs mt-0.5 max-w-2xl">
+                Paste a Spotify Track or Album URL below to immediately force the global homepage player to override. This bypasses the 24-hour cycle until the next automated system refresh.
+              </p>
+            </div>
           </div>
-          <p className="text-brand-gold/60 text-xs leading-relaxed max-w-3xl">
-            <span className="font-header text-brand-gold/80 uppercase tracking-widest block mb-1">Manual Override Protocol</span>
-            To instantly bypass the automated 24-hour sync cycle, locate the <strong className="text-white/60 font-mono">integrations/spotify</strong> document inside the Firebase Data Console and manually overwrite the <strong className="text-white/60 font-mono">spotifyId</strong> field. The global homepage player will inherit the new track universally across all connected client devices without requiring a full infrastructure rebuild.
-          </p>
+          
+          <form onSubmit={handleSpotifyOverride} className="flex flex-col md:flex-row gap-3">
+            <input
+              type="text"
+              value={overrideUrl}
+              onChange={(e) => setOverrideUrl(e.target.value)}
+              placeholder={overrideStatus === "error" ? "Invalid Spotify URI. Try again." : "https://open.spotify.com/track/..."}
+              disabled={overrideStatus === "loading" || overrideStatus === "success"}
+              className="flex-1 bg-black/40 border border-white/10 px-4 py-3 rounded-sm text-sm text-white focus:outline-none focus:border-brand-gold/50 transition-colors placeholder:text-white/20"
+            />
+            <button
+              type="submit"
+              disabled={overrideStatus === "loading" || overrideStatus === "success"}
+              className="bg-brand-gold text-black px-6 py-3 rounded-sm font-header text-xs uppercase tracking-widest hover:bg-white transition-colors flex items-center justify-center min-w-[120px] disabled:opacity-50"
+            >
+              {overrideStatus === "idle" && "Override Now"}
+              {overrideStatus === "loading" && <Loader2 className="w-4 h-4 animate-spin text-black" />}
+              {overrideStatus === "success" && <Check className="w-4 h-4 text-black" />}
+              {overrideStatus === "error" && "Failed"}
+            </button>
+          </form>
         </div>
       </div>
     );
