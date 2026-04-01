@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import { Button } from "../components/ui/Button";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Phone, MapPin, Send, Loader2, Check } from "lucide-react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../lib/firebase";
@@ -141,7 +141,7 @@ export function Contact() {
                     required
                     disabled={status === "loading" || status === "success"}
                     className="w-full bg-white/5 border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-brand-gold transition-colors disabled:opacity-50"
-                    placeholder="John Doe"
+                    placeholder="Luke John"
                   />
                 </div>
                 <div className="space-y-2">
@@ -156,7 +156,7 @@ export function Contact() {
                     required
                     disabled={status === "loading" || status === "success"}
                     className="w-full bg-white/5 border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-brand-gold transition-colors disabled:opacity-50"
-                    placeholder="john@example.com"
+                    placeholder="luke@example.com"
                   />
                 </div>
               </div>
@@ -227,6 +227,31 @@ export function Contact() {
       </div>
 
       <Footer />
+
+      {/* Cinematic Success Toast */}
+      <AnimatePresence>
+        {status === "success" && (
+          <motion.div
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            className="fixed bottom-10 right-4 md:right-10 z-50 bg-[#0a0a0c] border border-brand-gold/30 shadow-[0_0_40px_rgba(255,215,0,0.15)] rounded-2xl p-4 pr-6 flex items-center gap-4 max-w-sm"
+          >
+            <div className="w-10 h-10 rounded-full bg-brand-gold/10 flex items-center justify-center shrink-0">
+              <Check className="w-5 h-5 text-brand-gold" />
+            </div>
+            <div>
+              <p className="font-header text-white text-sm uppercase tracking-widest">
+                Inquiry Secured
+              </p>
+              <p className="text-white/60 text-xs mt-0.5">
+                Your transmission has been delivered directly to management.
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
