@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Bell } from "lucide-react"; // Changed map pin to bell for notification vibe
+import { Bell } from "lucide-react";
 import { Button } from "./ui/Button";
 import { RSVPModal } from "./ui/RSVPModal";
 

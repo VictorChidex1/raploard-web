@@ -10,7 +10,8 @@ import {
   Home,
   Video,
   ShoppingBag,
-  Ticket, // Added Ticket icon for Tour
+  Ticket,
+  BookOpen,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 
@@ -18,8 +19,9 @@ const navLinks = [
   { name: "Home", path: "/", icon: Home },
   { name: "Music", path: "/music", icon: Music2 },
   { name: "Videos", path: "/videos", icon: Video },
-  { name: "Store", path: "/store", icon: ShoppingBag }, // NEW: Added Store link
-  { name: "Tour", path: "/tour", icon: Ticket }, // Added Tour link
+  { name: "Tour", path: "/tour", icon: Ticket },
+  { name: "News", path: "/news", icon: BookOpen },
+  { name: "Store", path: "/store", icon: ShoppingBag },
   { name: "About", path: "/about", icon: User },
   { name: "Contact", path: "/contact", icon: Mail },
 ];

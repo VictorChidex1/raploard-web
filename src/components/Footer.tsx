@@ -139,6 +139,14 @@ export function Footer() {
                 </li>
                 <li>
                   <Link
+                    to="/news"
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    News
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     to="/videos"
                     className="text-gray-400 hover:text-white transition-colors"
                   >
@@ -228,7 +236,7 @@ export function Footer() {
             reserved.
           </p>
           <p className="text-gray-600 text-xs uppercase tracking-wider">
-            Designed by Chidex
+            Designed by CV Digitals LTD
           </p>
         </div>
       </div>
