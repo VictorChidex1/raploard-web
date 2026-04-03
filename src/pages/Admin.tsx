@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { collection, onSnapshot, query, orderBy, Timestamp, doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy, Timestamp, doc, setDoc, serverTimestamp, deleteDoc } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,15 +17,29 @@ import {
   WifiOff,
   Loader2,
   Check,
-  Link as LinkIcon
+  Link as LinkIcon,
+  BookOpen,
+  Trash2,
+  Plus,
+  PenTool
 } from "lucide-react";
 import { db, auth } from "../lib/firebase";
 import { CONFIG } from "../config";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
-type ActiveTab = "overview" | "subscribers" | "rsvps" | "contacts" | "spotify";
+type ActiveTab = "overview" | "subscribers" | "rsvps" | "contacts" | "spotify" | "journal";
 
+interface JournalArticle {
+  id: string;
+  slug: string;
+  title: string;
+  category: string;
+  excerpt: string;
+  content: string;
+  coverImage: string;
+  publishDate: Timestamp;
+}
 interface Subscriber {
   id: string;
   email: string;
@@ -146,6 +160,7 @@ const NAV_ITEMS: { id: ActiveTab; label: string; Icon: React.ElementType }[] = [
   { id: "rsvps", label: "Tour RSVPs", Icon: MapPin },
   { id: "contacts", label: "Contacts", Icon: Mail },
   { id: "spotify", label: "Spotify", Icon: Music2 },
+  { id: "journal", label: "Journal", Icon: BookOpen },
 ];
 
 // ─── Sub-components ───────────────────────────────────────────────────────
@@ -309,8 +324,14 @@ export function Admin() {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [spotify, setSpotify] = useState<SpotifyDoc | null>(null);
+  const [journal, setJournal] = useState<JournalArticle[]>([]);
   const [isLive, setIsLive] = useState(false);
   const [expandedContact, setExpandedContact] = useState<string | null>(null);
+
+  // Journal CMS State
+  const [showJournalEditor, setShowJournalEditor] = useState(false);
+  const [journalForm, setJournalForm] = useState({ id: "", title: "", slug: "", category: "Press", excerpt: "", content: "", coverImage: "", publishDateInput: "" });
+  const [journalStatus, setJournalStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   // Spotify Override State
   const [overrideUrl, setOverrideUrl] = useState("");
@@ -415,10 +436,20 @@ export function Admin() {
       }
     );
 
+    const unsubJournal = onSnapshot(
+      query(collection(db, "journal"), orderBy("publishDate", "desc")),
+      (snap) => {
+        setJournal(
+          snap.docs.map((d) => ({ id: d.id, ...d.data() } as JournalArticle))
+        );
+      }
+    );
+
     return () => {
       unsubNewsletter();
       unsubContacts();
       unsubSpotify();
+      unsubJournal();
     };
   }, []);
 
@@ -867,6 +898,248 @@ export function Admin() {
     );
   }
 
+  async function handleJournalSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setJournalStatus("loading");
+
+    try {
+      const isEditing = !!journalForm.id;
+      const docRef = isEditing 
+         ? doc(db, "journal", journalForm.id) 
+         : doc(collection(db, "journal"));
+      
+      let finalPublishDate = serverTimestamp();
+      if (journalForm.publishDateInput) {
+         const dateObj = new Date(journalForm.publishDateInput + "T12:00:00");
+         finalPublishDate = Timestamp.fromDate(dateObj);
+      } else if (!isEditing) {
+         finalPublishDate = serverTimestamp();
+      }
+
+      const payload = {
+        title: journalForm.title,
+        slug: journalForm.slug || journalForm.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, ""),
+        category: journalForm.category,
+        excerpt: journalForm.excerpt,
+        content: journalForm.content,
+        coverImage: journalForm.coverImage,
+        ...(isEditing && !journalForm.publishDateInput ? {} : { publishDate: finalPublishDate })
+      };
+
+      await setDoc(docRef, payload, { merge: true });
+
+      setJournalStatus("success");
+      setTimeout(() => {
+        setJournalStatus("idle");
+        setShowJournalEditor(false);
+        setJournalForm({ id: "", title: "", slug: "", category: "Press", excerpt: "", content: "", coverImage: "", publishDateInput: "" });
+      }, 1500);
+    } catch (err) {
+      console.error(err);
+      setJournalStatus("error");
+      setTimeout(() => setJournalStatus("idle"), 3000);
+    }
+  }
+
+  async function handleJournalDelete(id: string) {
+    if (confirm("Are you sure you want to delete this article? This is permanent.")) {
+      await deleteDoc(doc(db, "journal", id));
+    }
+  }
+
+  function renderJournal() {
+    if (showJournalEditor) {
+      return (
+        <div className="space-y-6">
+          <button 
+             onClick={() => {
+                setShowJournalEditor(false);
+                setJournalForm({ id: "", title: "", slug: "", category: "Press", excerpt: "", content: "", coverImage: "", publishDateInput: "" });
+             }}
+             className="text-white/40 hover:text-white uppercase tracking-widest font-header text-xs mb-4 inline-block"
+          >
+            ← Back to Archive
+          </button>
+          
+          <div className="bg-white/[0.015] border border-white/[0.04] rounded-sm p-6 backdrop-blur-md max-w-4xl">
+            <h3 className="font-header text-brand-gold text-lg uppercase tracking-widest mb-6">
+              {journalForm.id ? "Edit Article" : "Draft New Article"}
+            </h3>
+
+            <form onSubmit={handleJournalSubmit} className="space-y-6">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-white/40 text-[10px] uppercase font-header tracking-widest mb-2">Title</label>
+                    <input 
+                       required
+                       type="text" 
+                       value={journalForm.title}
+                       onChange={(e) => {
+                           const newTitle = e.target.value;
+                           setJournalForm(prev => {
+                               const newState = { ...prev, title: newTitle };
+                               if (!prev.id) {
+                                   newState.slug = newTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
+                               }
+                               return newState;
+                           });
+                       }}
+                       className="w-full bg-black/40 border border-white/10 px-4 py-3 rounded-sm text-sm text-white focus:border-brand-gold/50 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-white/40 text-[10px] uppercase font-header tracking-widest mb-2">Slug (URL endpoint)</label>
+                    <input 
+                       type="text" 
+                       value={journalForm.slug}
+                       placeholder="leave blank to auto-generate"
+                       onChange={(e) => setJournalForm({...journalForm, slug: e.target.value})}
+                       className="w-full bg-black/40 border border-white/10 px-4 py-3 rounded-sm text-sm text-white focus:border-brand-gold/50 focus:outline-none"
+                    />
+                  </div>
+               </div>
+
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                 <div>
+                    <label className="block text-white/40 text-[10px] uppercase font-header tracking-widest mb-2">Category</label>
+                    <select 
+                       value={journalForm.category}
+                       onChange={(e) => setJournalForm({...journalForm, category: e.target.value})}
+                       className="w-full bg-black/40 border border-white/10 px-4 py-3 rounded-sm text-sm text-white focus:border-brand-gold/50 focus:outline-none"
+                    >
+                       <option>Press</option>
+                       <option>Tour</option>
+                       <option>Release</option>
+                       <option>Editorial</option>
+                    </select>
+                 </div>
+                 <div>
+                    <label className="block text-white/40 text-[10px] uppercase font-header tracking-widest mb-2">Publish Date</label>
+                    <input 
+                       required
+                       type="date" 
+                       value={journalForm.publishDateInput}
+                       onChange={(e) => setJournalForm({...journalForm, publishDateInput: e.target.value})}
+                       className="w-full bg-black/40 border border-white/10 px-4 py-3 rounded-sm text-sm text-white focus:border-brand-gold/50 focus:outline-none [color-scheme:dark]"
+                    />
+                 </div>
+                 <div>
+                    <label className="block text-white/40 text-[10px] uppercase font-header tracking-widest mb-2">Cover Image URL</label>
+                    <input 
+                       required
+                       type="text" 
+                       value={journalForm.coverImage}
+                       placeholder="https://..."
+                       onChange={(e) => setJournalForm({...journalForm, coverImage: e.target.value})}
+                       className="w-full bg-black/40 border border-white/10 px-4 py-3 rounded-sm text-sm text-white focus:border-brand-gold/50 focus:outline-none"
+                    />
+                 </div>
+               </div>
+
+               <div>
+                 <label className="block text-white/40 text-[10px] uppercase font-header tracking-widest mb-2">Excerpt (Short Summary)</label>
+                 <textarea 
+                    required
+                    value={journalForm.excerpt}
+                    rows={2}
+                    onChange={(e) => setJournalForm({...journalForm, excerpt: e.target.value})}
+                    className="w-full bg-black/40 border border-white/10 px-4 py-3 rounded-sm text-sm text-white focus:border-brand-gold/50 focus:outline-none"
+                 />
+               </div>
+
+               <div>
+                 <label className="block text-white/40 text-[10px] uppercase font-header tracking-widest mb-2">Article Body Content (Hit Enter for Paragraphs)</label>
+                 <textarea 
+                    required
+                    value={journalForm.content}
+                    rows={12}
+                    onChange={(e) => {
+                        const newContent = e.target.value;
+                        setJournalForm(prev => {
+                            const newState = { ...prev, content: newContent };
+                            if (!prev.id) {
+                                const cleanText = newContent.replace(/\n/g, " ").trim();
+                                newState.excerpt = cleanText.substring(0, 150) + (cleanText.length > 150 ? "..." : "");
+                            }
+                            return newState;
+                        });
+                    }}
+                    className="w-full bg-black/40 border border-white/10 px-4 py-3 rounded-sm text-sm text-white focus:border-brand-gold/50 focus:outline-none placeholder:text-white/20"
+                    placeholder="Write your article here. Empty spaces and paragraphs are fully preserved and will render dynamically."
+                 />
+               </div>
+
+               <button
+                  type="submit"
+                  disabled={journalStatus === "loading" || journalStatus === "success"}
+                  className="bg-brand-gold text-black px-6 py-4 rounded-sm font-header text-xs uppercase tracking-widest hover:bg-white transition-colors flex items-center justify-center min-w-[200px]"
+               >
+                 {journalStatus === "idle" && (journalForm.id ? "Update Post" : "Publish Post")}
+                 {journalStatus === "loading" && <Loader2 className="w-4 h-4 animate-spin" />}
+                 {journalStatus === "success" && <Check className="w-4 h-4" />}
+                 {journalStatus === "error" && "Error"}
+               </button>
+            </form>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-6 animate-fade-in pb-12">
+        <SectionHeader title="The Publishing Desk" count={journal.length} onExport={() => {}} />
+
+        <div className="bg-white/[0.015] border border-white/[0.04] rounded-sm backdrop-blur-md">
+           <div className="p-4 border-b border-white/10 flex justify-end">
+              <button 
+                 onClick={() => {
+                    setJournalForm({ id: "", title: "", slug: "", category: "Press", excerpt: "", content: "", coverImage: "", publishDateInput: new Date().toISOString().split("T")[0] });
+                    setShowJournalEditor(true);
+                 }}
+                 className="flex items-center gap-2 bg-brand-gold/10 text-brand-gold border border-brand-gold/30 px-4 py-2 rounded-sm text-[10px] uppercase font-header tracking-widest hover:bg-brand-gold hover:text-black transition-colors"
+              >
+                 <Plus className="w-3 h-3" /> New Post
+              </button>
+           </div>
+           
+           <div className="divide-y divide-white/5">
+              {journal.map(post => (
+                 <div key={post.id} className="p-4 flex items-center gap-6 group hover:bg-white/[0.02]">
+                    <img src={post.coverImage} className="w-24 h-24 object-cover object-center rounded-sm grayscale group-hover:grayscale-0 transition-all border border-white/10" />
+                    <div className="flex-1">
+                       <span className="font-header text-brand-gold text-[10px] tracking-widest uppercase mb-1 block">{post.category}</span>
+                       <h4 className="font-serif text-2xl text-white mb-2">{post.title}</h4>
+                       <p className="text-sm text-white/40 max-w-xl truncate">{post.excerpt}</p>
+                    </div>
+                    <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                       <button onClick={() => { 
+                          let inlineDate = "";
+                          if (post.publishDate?.toDate) {
+                             inlineDate = post.publishDate.toDate().toISOString().split("T")[0];
+                          }
+                          setJournalForm({ ...post, publishDateInput: inlineDate }); 
+                          setShowJournalEditor(true); 
+                       }} className="flex items-center justify-center gap-2 text-[10px] uppercase font-header tracking-widest px-3 py-2 bg-white/5 border border-white/10 text-white hover:text-brand-gold rounded-sm w-full">
+                          <PenTool className="w-3 h-3" /> Edit
+                       </button>
+                       <button onClick={() => handleJournalDelete(post.id)} className="flex items-center justify-center gap-2 text-[10px] uppercase font-header tracking-widest px-3 py-2 bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded-sm transition-colors w-full">
+                          <Trash2 className="w-3 h-3" /> Delete
+                       </button>
+                    </div>
+                 </div>
+              ))}
+
+              {journal.length === 0 && (
+                 <div className="p-12 text-center text-white/30 uppercase tracking-widest text-[10px] font-header">
+                    No articles found in archive.
+                 </div>
+              )}
+           </div>
+        </div>
+      </div>
+    );
+  }
+
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
@@ -1028,6 +1301,7 @@ export function Admin() {
               {activeTab === "rsvps" && renderRSVPs()}
               {activeTab === "contacts" && renderContacts()}
               {activeTab === "spotify" && renderSpotify()}
+              {activeTab === "journal" && renderJournal()}
             </motion.div>
           </AnimatePresence>
         </main>

@@ -10,6 +10,7 @@ import { PrivacyPolicy } from "./pages/PrivacyPolicy";
 import { TermsOfService } from "./pages/TermsOfService";
 import { Tour } from "./pages/Tour";
 import { News } from "./pages/News";
+import { Article } from "./pages/Article";
 import { Admin } from "./pages/Admin";
 import { AdminLogin } from "./pages/AdminLogin";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -31,6 +32,7 @@ function App() {
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/tour" element={<Tour />} />
         <Route path="/news" element={<News />} />
+        <Route path="/news/:slug" element={<Article />} />
 
         {/* ── The Vault (Admin) — Dark routes, no public links ── */}
         <Route path="/admin/login" element={<AdminLogin />} />

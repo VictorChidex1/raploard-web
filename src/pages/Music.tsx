@@ -19,7 +19,7 @@ const albums: Album[] = [
   {
     title: "Son",
     type: "Single",
-    releaseDate: "Mar 21, 2026",
+    releaseDate: "Feb 20, 2026",
     image: "/raploard-son.jpg",
     streamLink: "https://ffm.to/son-malcolmx",
   },

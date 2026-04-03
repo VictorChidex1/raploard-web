@@ -29,7 +29,7 @@ const releases: Release[] = [
     tag: "New Release",
     description: `Stepping into a new era of dominance, RapLoard delivers pure, unfiltered hip-hop on his latest track, "SON". Leaving the festive dancefloors behind, he trades infectious rhythms for hard-hitting bars and razor-sharp lyricism. With a commanding presence and an elite flow, "SON" is a bold declaration of his place in the rap game, a heavy reminder that he's here to claim the crown.`,
     image: "/raploard-son.jpg",
-    releaseDate: "Mar 21, 2026",
+    releaseDate: "Feb 20, 2026",
     links: {
       stream: "https://Ffm.to/son-malcolmx",
       spotify:
