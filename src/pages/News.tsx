@@ -135,14 +135,21 @@ export function News() {
             {featuredArticle && (
               <Link to={`/news/${featuredArticle.slug || featuredArticle.id}`} className="block relative group mb-32 cursor-pointer">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                  <div className="lg:col-span-8 overflow-hidden rounded-sm relative aspect-[16/9] lg:aspect-[4/3]">
-                    <motion.div style={{ y: heroY }} className="absolute inset-x-0 -inset-y-10">
+                  <div className="lg:col-span-8 overflow-hidden rounded-sm relative aspect-[4/5] lg:aspect-[4/3] bg-[#070708] group">
+                    <motion.div style={{ y: heroY }} className="absolute inset-x-0 -inset-y-20">
+                      {/* Blurry Backdrop */}
                       <div 
-                        className="w-full h-full bg-cover bg-center grayscale-[80%] contrast-125 opacity-80 mix-blend-luminosity group-hover:grayscale-0 group-hover:mix-blend-normal group-hover:opacity-100 transition-all duration-700 ease-out"
+                        className="w-full h-full bg-cover bg-center opacity-20 blur-2xl scale-125"
                         style={{ backgroundImage: `url("${featuredArticle.coverImage}")` }}
                       />
+                      {/* Main Contained Image */}
+                      <img
+                        src={featuredArticle.coverImage}
+                        alt={featuredArticle.title}
+                        className="absolute inset-0 w-full h-full object-contain grayscale-[80%] contrast-125 mix-blend-luminosity group-hover:grayscale-0 group-hover:mix-blend-normal transition-all duration-700 ease-out z-10"
+                      />
                     </motion.div>
-                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none" />
+                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none z-20" />
                   </div>
 
                   <div className="lg:col-span-4 lg:-ml-16 z-10 bg-[#070708]/90 backdrop-blur-md p-8 border border-white/[0.05] shadow-2xl relative">

@@ -109,14 +109,26 @@ export function Article() {
           </p>
         </div>
 
-        {/* Hero Image */}
+        {/* Hero Image Suite */}
         <div className="w-full max-w-screen-xl mx-auto px-6 mb-20">
-          <div className="w-full aspect-[16/9] md:aspect-[21/9] bg-white/5 rounded-sm overflow-hidden relative">
+          <div className="w-full aspect-[4/5] md:aspect-[21/9] bg-[#070708] rounded-sm overflow-hidden relative group">
+            
+            {/* Blurry Atmospheric Background */}
             <div 
-               className="w-full h-full bg-cover bg-center grayscale-[20%] contrast-125"
+               className="absolute inset-x-0 -inset-y-20 bg-cover bg-center opacity-30 blur-2xl scale-125"
                style={{ backgroundImage: `url("${article.coverImage}")` }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#070708] via-transparent to-transparent opacity-80" />
+            
+            {/* Main Image Natively Contained */}
+            <img 
+               src={article.coverImage} 
+               alt={article.title}
+               className="absolute inset-0 w-full h-full object-contain grayscale-[20%] contrast-125 z-10"
+            />
+            
+            {/* Cinematic Gradient Fade */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#070708] via-transparent to-transparent opacity-90 z-20 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#070708] via-[#070708]/20 to-transparent opacity-90 z-20 md:hidden pointer-events-none" />
           </div>
         </div>
 

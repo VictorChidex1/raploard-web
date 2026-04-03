@@ -21,9 +21,11 @@ import {
   BookOpen,
   Trash2,
   Plus,
-  PenTool
+  PenTool,
+  UploadCloud
 } from "lucide-react";
-import { db, auth } from "../lib/firebase";
+import { db, auth, storage } from "../lib/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { CONFIG } from "../config";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -332,6 +334,29 @@ export function Admin() {
   const [showJournalEditor, setShowJournalEditor] = useState(false);
   const [journalForm, setJournalForm] = useState({ id: "", title: "", slug: "", category: "Press", excerpt: "", content: "", coverImage: "", publishDateInput: "" });
   const [journalStatus, setJournalStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+     const file = e.target.files?.[0];
+     if (!file) return;
+
+     setIsUploading(true);
+     try {
+        const fileExt = file.name.split('.').pop() || 'jpg';
+        const fileName = `journal-covers/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const storageRef = ref(storage, fileName);
+        
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+        
+        setJournalForm(prev => ({ ...prev, coverImage: url }));
+     } catch (err) {
+        console.error("Image upload failed", err);
+        alert("Failed to upload image. Please check your network or try a smaller file.");
+     } finally {
+        setIsUploading(false);
+     }
+  };
 
   // Spotify Override State
   const [overrideUrl, setOverrideUrl] = useState("");
@@ -1023,16 +1048,34 @@ export function Admin() {
                        className="w-full bg-black/40 border border-white/10 px-4 py-3 rounded-sm text-sm text-white focus:border-brand-gold/50 focus:outline-none [color-scheme:dark]"
                     />
                  </div>
-                 <div>
-                    <label className="block text-white/40 text-[10px] uppercase font-header tracking-widest mb-2">Cover Image URL</label>
-                    <input 
-                       required
-                       type="text" 
-                       value={journalForm.coverImage}
-                       placeholder="https://..."
-                       onChange={(e) => setJournalForm({...journalForm, coverImage: e.target.value})}
-                       className="w-full bg-black/40 border border-white/10 px-4 py-3 rounded-sm text-sm text-white focus:border-brand-gold/50 focus:outline-none"
-                    />
+                 <div className="flex flex-col">
+                    <label className="block text-white/40 text-[10px] uppercase font-header tracking-widest mb-2">Cover Image (URL or Upload)</label>
+                    <div className="flex flex-col relative group h-full">
+                       <input 
+                          required
+                          type="url" 
+                          value={journalForm.coverImage}
+                          placeholder="https://..."
+                          onChange={(e) => setJournalForm({...journalForm, coverImage: e.target.value})}
+                          className="w-full h-full bg-black/40 border border-white/10 px-4 py-3 rounded-sm text-sm text-white focus:border-brand-gold/50 focus:outline-none pr-12"
+                       />
+                       <div className="absolute right-1 top-1/2 -translate-y-1/2">
+                          <input 
+                             type="file"
+                             accept="image/*"
+                             onChange={handleImageUpload}
+                             className="hidden"
+                             id="image-upload"
+                          />
+                          <label 
+                             htmlFor="image-upload"
+                             className="cursor-pointer p-1.5 flex items-center justify-center text-white/40 hover:text-brand-gold transition-colors bg-white/5 hover:bg-white/10 rounded-sm"
+                             title="Upload from computer"
+                          >
+                             {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
+                          </label>
+                       </div>
+                    </div>
                  </div>
                </div>
 
