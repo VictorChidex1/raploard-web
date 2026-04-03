@@ -40,8 +40,28 @@ const videos: Video[] = [
 
 export function Videos() {
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
 
-  // Filter out videos without IDs for now, or show them as coming soon?
+  const totalPages = Math.ceil(videos.length / itemsPerPage);
+  const currentVideos = videos.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
   // Let's show them but maybe disable play or show "Coming Soon" if no ID.
   // For this implementation, I will just render the one working video and maybe placeholders that don't open modal if empty.
 
@@ -63,7 +83,7 @@ export function Videos() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-          {videos.map((video, i) => (
+          {currentVideos.map((video, i) => (
             <motion.div
               key={video.title}
               initial={{ opacity: 0, scale: 0.9 }}
@@ -117,6 +137,29 @@ export function Videos() {
             </motion.div>
           ))}
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="mt-24 mb-12 flex items-center justify-center gap-6">
+            <button
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+              className="px-6 py-3 border border-white/20 text-white font-header tracking-widest text-sm uppercase hover:bg-white hover:text-black transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-white disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            <span className="text-white/50 font-mono text-sm tracking-widest">
+              PAGE {currentPage} OF {totalPages}
+            </span>
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              className="px-6 py-3 border border-brand-gold text-brand-gold font-header tracking-widest text-sm uppercase hover:bg-brand-gold hover:text-black transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-brand-gold disabled:border-white/20 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
 
       <Footer />

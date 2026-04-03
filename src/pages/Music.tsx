@@ -48,9 +48,9 @@ const albums: Album[] = [
     title: "Deep Down",
     type: "Single",
     releaseDate: "Jun 25, 2024",
-    image: "https://img.youtube.com/vi/lpSNfx7jYJc/maxresdefault.jpg", // YouTube Thumbnail
+    image: "https://img.youtube.com/vi/lpSNfx7jYJc/maxresdefault.jpg",
     streamLink: "https://ffm.to/deep_down",
-    videoId: "lpSNfx7jYJc", // Trigger for modal
+    videoId: "lpSNfx7jYJc",
   },
   {
     title: "Next Best Thing EP",
@@ -126,6 +126,28 @@ const albums: Album[] = [
 
 export function Music() {
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
+
+  const totalPages = Math.ceil(albums.length / itemsPerPage);
+  const currentAlbums = albums.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-brand-dark pt-20">
@@ -145,7 +167,7 @@ export function Music() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-          {albums.map((album, i) => (
+          {currentAlbums.map((album, i) => (
             <motion.div
               key={album.title}
               initial={{ opacity: 0, scale: 0.9 }}
@@ -187,6 +209,29 @@ export function Music() {
             </motion.div>
           ))}
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="mt-24 mb-12 flex items-center justify-center gap-6">
+            <button
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+              className="px-6 py-3 border border-white/20 text-white font-header tracking-widest text-sm uppercase hover:bg-white hover:text-black transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-white disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            <span className="text-white/50 font-mono text-sm tracking-widest">
+              PAGE {currentPage} OF {totalPages}
+            </span>
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              className="px-6 py-3 border border-brand-gold text-brand-gold font-header tracking-widest text-sm uppercase hover:bg-brand-gold hover:text-black transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-brand-gold disabled:border-white/20 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
 
       <Footer />
