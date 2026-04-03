@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { CONFIG } from "../config";
+import { Helmet } from "react-helmet-async";
 
 const POLICY_SECTIONS = [
   {
@@ -70,7 +71,7 @@ export function PrivacyPolicy() {
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
-    restDelta: 0.001
+    restDelta: 0.001,
   });
 
   // Smooth scroll handler for Desktop sidebar
@@ -106,6 +107,20 @@ export function PrivacyPolicy() {
 
   return (
     <div className="min-h-screen bg-brand-dark text-white selection:bg-brand-gold selection:text-brand-dark relative">
+      <Helmet>
+        <title>The Vault | Privacy Protocol</title>
+        <meta
+          name="description"
+          content="Official privacy and data protection protocols for the Raploard digital ecosystem. Transparency and security are built into our foundation."
+        />
+        <meta property="og:title" content="The Vault | Privacy Protocol" />
+        <meta
+          property="og:description"
+          content="Official privacy and data protection protocols for the Raploard digital ecosystem. Transparency and security are built into our foundation."
+        />
+        <meta property="og:image" content="/raploard-hero.jpeg" />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
       <motion.div
         className="fixed top-0 left-0 right-0 h-[3px] bg-brand-gold origin-left z-[60]"
         style={{ scaleX }}
@@ -137,7 +152,8 @@ export function PrivacyPolicy() {
             </h1>
             <div className="inline-block border border-white/10 bg-white/5 py-2 px-4 rounded-sm backdrop-blur-sm mb-12">
               <p className="font-body text-xs md:text-sm text-gray-400 font-medium tracking-widest uppercase">
-                VERSION 1.2 | EFFECTIVE: <span className="text-white">APRIL 1, 2026</span>
+                VERSION 1.2 | EFFECTIVE:{" "}
+                <span className="text-white">APRIL 1, 2026</span>
               </p>
             </div>
 
@@ -147,9 +163,18 @@ export function PrivacyPolicy() {
                 "Trust is non-negotiable."
               </h3>
               <ul className="space-y-3 font-body text-sm md:text-base text-gray-400 mb-4">
-                <li className="flex gap-3"><span className="text-brand-gold font-bold">01.</span> We don't sell your data. Never have, never will.</li>
-                <li className="flex gap-3"><span className="text-brand-gold font-bold">02.</span> You have complete sovereign control over your information.</li>
-                <li className="flex gap-3"><span className="text-brand-gold font-bold">03.</span> Security is built into the foundation of this ecosystem.</li>
+                <li className="flex gap-3">
+                  <span className="text-brand-gold font-bold">01.</span> We
+                  don't sell your data. Never have, never will.
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-brand-gold font-bold">02.</span> You
+                  have complete sovereign control over your information.
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-brand-gold font-bold">03.</span>{" "}
+                  Security is built into the foundation of this ecosystem.
+                </li>
               </ul>
             </div>
           </motion.div>
@@ -166,7 +191,7 @@ export function PrivacyPolicy() {
                 <h4 className="font-header text-xs text-gray-500 tracking-[0.2em] uppercase">
                   The Index
                 </h4>
-                <button 
+                <button
                   onClick={() => window.print()}
                   className="flex items-center gap-2 text-xs font-header tracking-wider uppercase text-brand-gold hover:text-white transition-colors border border-brand-gold/30 hover:border-white/50 px-3 py-1.5 rounded-sm"
                 >
@@ -215,12 +240,15 @@ export function PrivacyPolicy() {
                 viewport={{ once: true, margin: "-100px" }}
                 variants={{
                   hidden: { opacity: 0 },
-                  visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
+                  visible: { opacity: 1, transition: { staggerChildren: 0.2 } },
                 }}
                 className="scroll-mt-32"
               >
-                <motion.div 
-                  variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
+                <motion.div
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    visible: { opacity: 1, y: 0 },
+                  }}
                   className="flex items-center gap-4 mb-8 pb-4 border-b border-white/10"
                 >
                   <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
@@ -231,8 +259,11 @@ export function PrivacyPolicy() {
                     {section.title}
                   </h2>
                 </motion.div>
-                <motion.p 
-                  variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
+                <motion.p
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    visible: { opacity: 1, y: 0 },
+                  }}
                   className="font-body text-lg text-gray-300 leading-relaxed md:leading-[2] font-light max-w-2xl"
                 >
                   {section.content}

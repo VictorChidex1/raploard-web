@@ -1,8 +1,16 @@
 {
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/news/:slug", "destination": "/api/og" },
+    { "source": "/music", "destination": "/api/og?path=/music" },
+    { "source": "/videos", "destination": "/api/og?path=/videos" },
+    { "source": "/tour", "destination": "/api/og?path=/tour" },
+    { "source": "/about", "destination": "/api/og?path=/about" },
+    { "source": "/contact", "destination": "/api/og?path=/contact" },
+    { "source": "/store", "destination": "/api/og?path=/store" },
+    { "source": "/news", "destination": "/api/og?path=/news" },
+    { "source": "/privacy", "destination": "/api/og?path=/privacy" },
+    { "source": "/terms", "destination": "/api/og?path=/terms" },
+    { "source": "/", "destination": "/api/og?path=/" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

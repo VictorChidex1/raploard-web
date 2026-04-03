@@ -14,44 +14,45 @@ import {
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { CONFIG } from "../config";
+import { Helmet } from "react-helmet-async";
 
 const TOS_SECTIONS = [
   {
     id: "agreement",
     icon: BookOpen,
     title: "The Agreement",
-    content: `By accessing the ${CONFIG.artist.name} digital platform, you enter into a binding accord with ${CONFIG.artist.name} Music. This platform is a curated space for art and excellence; by using it, you manifest your agreement to these terms in their entirety. If you do not align with this vision, we respectfully ask that you refrain from further interaction with the ecosystem.`
+    content: `By accessing the ${CONFIG.artist.name} digital platform, you enter into a binding accord with ${CONFIG.artist.name} Music. This platform is a curated space for art and excellence; by using it, you manifest your agreement to these terms in their entirety. If you do not align with this vision, we respectfully ask that you refrain from further interaction with the ecosystem.`,
   },
   {
     id: "intellectual-property",
     icon: Shield,
     title: "Intellectual Property",
-    content: `All content—including but not limited to audio recordings (Sonic Vault), visual imagery, trademarked iconography (Raploard Gold), and proprietary code—is the exclusive intellectual property of ${CONFIG.artist.name}. Unauthorized duplication, redistribution, or digital scraping of these assets is strictly prohibited and protected by international copyright jurisdictions.`
+    content: `All content—including but not limited to audio recordings (Sonic Vault), visual imagery, trademarked iconography (Raploard Gold), and proprietary code—is the exclusive intellectual property of ${CONFIG.artist.name}. Unauthorized duplication, redistribution, or digital scraping of these assets is strictly prohibited and protected by international copyright jurisdictions.`,
   },
   {
     id: "user-conduct",
     icon: AlertCircle,
     title: "User Conduct",
-    content: `The movement is built on mutual respect. Users are prohibited from attempting to breach the vault security, injecting malicious scripts, or utilizing automated bots for newsletter/RSVP spamming. Any behavior that compromises the integrity of the digital interface or the experience of other fans will result in a permanent blacklisting from all future releases and events.`
+    content: `The movement is built on mutual respect. Users are prohibited from attempting to breach the vault security, injecting malicious scripts, or utilizing automated bots for newsletter/RSVP spamming. Any behavior that compromises the integrity of the digital interface or the experience of other fans will result in a permanent blacklisting from all future releases and events.`,
   },
   {
     id: "liability",
     icon: Scale,
     title: "Limitation of Liability",
-    content: `${CONFIG.artist.name} Music and its architectural partners provide this platform on an 'as-is' basis. While we strive for absolute perfection, we do not warrant that the digital interface will be uninterrupted or error-free. We shall not be held liable for any indirect, incidental, or consequential damages arising from the use of this luxury digital environment.`
+    content: `${CONFIG.artist.name} Music and its architectural partners provide this platform on an 'as-is' basis. While we strive for absolute perfection, we do not warrant that the digital interface will be uninterrupted or error-free. We shall not be held liable for any indirect, incidental, or consequential damages arising from the use of this luxury digital environment.`,
   },
   {
     id: "modifications",
     icon: History,
     title: "Protocol Evolution",
-    content: `The digital landscape is dynamic. We reserve the unilateral right to evolve these terms at any moment to reflect new security standards or artistic directions. Your continued presence within the ecosystem following such updates constitutes your acceptance of the evolved protocol.`
+    content: `The digital landscape is dynamic. We reserve the unilateral right to evolve these terms at any moment to reflect new security standards or artistic directions. Your continued presence within the ecosystem following such updates constitutes your acceptance of the evolved protocol.`,
   },
   {
     id: "governing-law",
     icon: Gavel,
     title: "Jurisdiction",
-    content: `These terms are governed by and construed in accordance with the laws of the jurisdiction in which ${CONFIG.artist.name} Music is headquartered, without regard to conflict of law principles. Any formal disputes shall be resolved exclusively within the elite courts of said jurisdiction.`
-  }
+    content: `These terms are governed by and construed in accordance with the laws of the jurisdiction in which ${CONFIG.artist.name} Music is headquartered, without regard to conflict of law principles. Any formal disputes shall be resolved exclusively within the elite courts of said jurisdiction.`,
+  },
 ];
 
 export function TermsOfService() {
@@ -64,7 +65,7 @@ export function TermsOfService() {
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
-    restDelta: 0.001
+    restDelta: 0.001,
   });
 
   const scrollToSection = (id: string) => {
@@ -98,6 +99,20 @@ export function TermsOfService() {
 
   return (
     <div className="min-h-screen bg-brand-dark text-white selection:bg-brand-gold selection:text-brand-dark relative">
+      <Helmet>
+        <title>The Accord | Terms of Service</title>
+        <meta
+          name="description"
+          content="The governing terms and conditions for interacting with the Raploard platform and its digital assets. Excellence and integrity in every interaction."
+        />
+        <meta property="og:title" content="The Accord | Terms of Service" />
+        <meta
+          property="og:description"
+          content="The governing terms and conditions for interacting with the Raploard platform and its digital assets. Excellence and integrity in every interaction."
+        />
+        <meta property="og:image" content="/raploard-hero.jpeg" />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
       <motion.div
         className="fixed top-0 left-0 right-0 h-[3px] bg-brand-gold origin-left z-[60]"
         style={{ scaleX }}
@@ -107,7 +122,7 @@ export function TermsOfService() {
       {/* The Accord Header */}
       <section className="pt-32 pb-16 md:pt-48 md:pb-24 px-6 relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-64 bg-brand-gold/5 blur-[100px] rounded-full pointer-events-none" />
-        
+
         <div className="container mx-auto max-w-5xl relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -128,7 +143,8 @@ export function TermsOfService() {
             </h1>
             <div className="inline-block border border-white/10 bg-white/5 py-2 px-4 rounded-sm backdrop-blur-sm mb-12">
               <p className="font-body text-xs md:text-sm text-gray-400 font-medium tracking-widest uppercase">
-                VERSION 1.0 | EFFECTIVE: <span className="text-white">APRIL 1, 2026</span>
+                VERSION 1.0 | EFFECTIVE:{" "}
+                <span className="text-white">APRIL 1, 2026</span>
               </p>
             </div>
 
@@ -138,9 +154,18 @@ export function TermsOfService() {
                 "Excellence is our standard."
               </h3>
               <ul className="space-y-3 font-body text-sm md:text-base text-gray-400 mb-4">
-                <li className="flex gap-3"><span className="text-brand-gold font-bold">01.</span> Respect the art; do not steal or replicate our content.</li>
-                <li className="flex gap-3"><span className="text-brand-gold font-bold">02.</span> Maintain the integrity of this digital ecosystem.</li>
-                <li className="flex gap-3"><span className="text-brand-gold font-bold">03.</span> We evolve—expect these terms to do the same.</li>
+                <li className="flex gap-3">
+                  <span className="text-brand-gold font-bold">01.</span> Respect
+                  the art; do not steal or replicate our content.
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-brand-gold font-bold">02.</span>{" "}
+                  Maintain the integrity of this digital ecosystem.
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-brand-gold font-bold">03.</span> We
+                  evolve—expect these terms to do the same.
+                </li>
               </ul>
             </div>
           </motion.div>
@@ -150,7 +175,6 @@ export function TermsOfService() {
       {/* Main Content Area */}
       <section className="pb-32 px-6">
         <div className="container mx-auto max-w-5xl flex flex-col md:flex-row gap-16 relative">
-          
           {/* Desktop Sticky Index */}
           <div className="hidden md:block w-1/4">
             <div className="sticky top-32 flex flex-col gap-2 bg-white/[0.02] backdrop-blur-md border border-white/[0.05] p-6 rounded-sm">
@@ -158,7 +182,7 @@ export function TermsOfService() {
                 <h4 className="font-header text-xs text-gray-500 tracking-[0.2em] uppercase">
                   The Codex
                 </h4>
-                <button 
+                <button
                   onClick={() => window.print()}
                   className="flex items-center gap-2 text-xs font-header tracking-wider uppercase text-brand-gold hover:text-white transition-colors border border-brand-gold/30 hover:border-white/50 px-3 py-1.5 rounded-sm"
                 >
@@ -207,7 +231,7 @@ export function TermsOfService() {
                 viewport={{ once: true, margin: "-100px" }}
                 variants={{
                   hidden: { opacity: 0 },
-                  visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
+                  visible: { opacity: 1, transition: { staggerChildren: 0.2 } },
                 }}
                 className="scroll-mt-32 relative"
               >
@@ -216,8 +240,11 @@ export function TermsOfService() {
                   0{index + 1}
                 </span>
 
-                <motion.div 
-                  variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
+                <motion.div
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    visible: { opacity: 1, y: 0 },
+                  }}
                   className="flex items-center gap-4 mb-8 pb-4 border-b border-white/10"
                 >
                   <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
@@ -227,8 +254,11 @@ export function TermsOfService() {
                     {section.title}
                   </h2>
                 </motion.div>
-                <motion.p 
-                  variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
+                <motion.p
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    visible: { opacity: 1, y: 0 },
+                  }}
                   className="font-body text-lg text-gray-300 leading-relaxed md:leading-[2] font-light max-w-2xl"
                 >
                   {section.content}

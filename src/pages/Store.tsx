@@ -5,12 +5,27 @@ import { motion } from "framer-motion";
 import { ShoppingBag, ArrowRight } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { RSVPModal } from "../components/ui/RSVPModal";
+import { Helmet } from "react-helmet-async";
 
 export function Store() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-brand-dark pt-20">
+      <Helmet>
+        <title>The Official Store | Raploard</title>
+        <meta
+          name="description"
+          content="Exclusive Raploard merchandise, apparel, and limited edition items. Own the movement and join the elite waitlist."
+        />
+        <meta property="og:title" content="The Official Store | Raploard" />
+        <meta
+          property="og:description"
+          content="Exclusive Raploard merchandise, apparel, and limited edition items. Own the movement and join the elite waitlist."
+        />
+        <meta property="og:image" content="/raploard-hero.jpeg" />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
       <Navbar />
 
       <div className="container mx-auto px-6 py-12">

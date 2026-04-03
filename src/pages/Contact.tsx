@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Phone, MapPin, Send, Loader2, Check } from "lucide-react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../lib/firebase";
+import { Helmet } from "react-helmet-async";
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -55,6 +56,20 @@ export function Contact() {
 
   return (
     <div className="min-h-screen bg-brand-dark pt-20">
+      <Helmet>
+        <title>Secure Inquiries | Raploard</title>
+        <meta
+          name="description"
+          content="Direct channel for booking Raploard, press inquiries, and brand collaborations. Connect with the new wave of Afrobeats."
+        />
+        <meta property="og:title" content="Secure Inquiries | Raploard" />
+        <meta
+          property="og:description"
+          content="Direct channel for booking Raploard, press inquiries, and brand collaborations. Connect with the new wave of Afrobeats."
+        />
+        <meta property="og:image" content="/raploard-hero.jpeg" />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
       <Navbar />
 
       <div className="container mx-auto px-6 py-12">

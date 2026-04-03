@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import { collection, query, where, getDocs, doc, getDoc, limit } from "firebase/firestore";
@@ -81,6 +82,18 @@ export function Article() {
 
   return (
     <div className="min-h-screen bg-[#070708] text-white selection:bg-brand-gold selection:text-black">
+      <Helmet>
+        <title>{article.title} | Raploard</title>
+        <meta name="description" content={article.excerpt} />
+        {/* These tags won't execute for WhatsApp or basic text spiders, but are still useful for Google and advanced spiders */}
+        <meta property="og:title" content={`${article.title} | Raploard`} />
+        <meta property="og:description" content={article.excerpt} />
+        <meta property="og:image" content={article.coverImage} />
+        <meta property="og:type" content="article" />
+        <meta property="article:published_time" content={article.date} />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
+      
       <Navbar />
       
       <main className="pt-32 pb-32">

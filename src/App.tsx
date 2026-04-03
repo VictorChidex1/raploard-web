@@ -16,13 +16,15 @@ import { AdminLogin } from "./pages/AdminLogin";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 import { ScrollToTop } from "./components/ui/ScrollToTop";
+import { HelmetProvider } from "react-helmet-async";
 
 function App() {
   return (
-    <Router>
-      <ScrollToTop />
-      <Routes>
-        <Route path="/" element={<Home />} />
+    <HelmetProvider>
+      <Router>
+        <ScrollToTop />
+        <Routes>
+          <Route path="/" element={<Home />} />
         <Route path="/music" element={<Music />} />
         <Route path="/videos" element={<Videos />} />
         <Route path="/store" element={<Store />} />
@@ -49,6 +51,7 @@ function App() {
         <Route path="*" element={<Home />} />
       </Routes>
     </Router>
+    </HelmetProvider>
   );
 }
 

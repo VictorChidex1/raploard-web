@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Play } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { VideoModal } from "../components/ui/VideoModal";
+import { Helmet } from "react-helmet-async";
 
 interface Album {
   title: string;
@@ -151,6 +152,14 @@ export function Music() {
 
   return (
     <div className="min-h-screen bg-brand-dark pt-20">
+      <Helmet>
+        <title>The Discography | Raploard</title>
+        <meta name="description" content="Explore the sonic evolution of Raploard. Stream the latest Afrobeats singles, EPs, and global hits." />
+        <meta property="og:title" content="The Discography | Raploard" />
+        <meta property="og:description" content="Explore the sonic evolution of Raploard. Stream the latest Afrobeats singles, EPs, and global hits." />
+        <meta property="og:image" content="/raploard-son.jpg" />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
       <Navbar />
 
       <div className="container mx-auto px-6 py-12">

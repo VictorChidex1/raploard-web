@@ -1,10 +1,25 @@
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import { motion } from "framer-motion";
+import { Helmet } from "react-helmet-async";
 
 export function About() {
   return (
     <div className="min-h-screen bg-brand-dark pt-20 text-white">
+      <Helmet>
+        <title>The Sonic Manifesto | Raploard</title>
+        <meta
+          name="description"
+          content="Discover the story of Raploard. The rising star of Afrobeats, charting a new path from Ogun State to the global stage."
+        />
+        <meta property="og:title" content="The Sonic Manifesto | Raploard" />
+        <meta
+          property="og:description"
+          content="Discover the story of Raploard. The rising star of Afrobeats, charting a new path from Ogun State to the global stage."
+        />
+        <meta property="og:image" content="/raploard-hero.jpeg" />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
       <Navbar />
 
       <div className="container mx-auto px-6 py-12 md:py-20">

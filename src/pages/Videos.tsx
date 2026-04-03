@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Play } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { VideoModal } from "../components/ui/VideoModal";
+import { Helmet } from "react-helmet-async";
 
 interface Video {
   title: string;
@@ -67,6 +68,14 @@ export function Videos() {
 
   return (
     <div className="min-h-screen bg-brand-dark pt-20">
+      <Helmet>
+        <title>The Visual Vault | Raploard</title>
+        <meta name="description" content="Experience the cinematic journey of Raploard. Official music videos, live performances, and exclusive visual content." />
+        <meta property="og:title" content="The Visual Vault | Raploard" />
+        <meta property="og:description" content="Experience the cinematic journey of Raploard. Official music videos, live performances, and exclusive visual content." />
+        <meta property="og:image" content="https://img.youtube.com/vi/lpSNfx7jYJc/maxresdefault.jpg" />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
       <Navbar />
 
       <div className="container mx-auto px-6 py-12">

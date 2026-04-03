@@ -12,6 +12,13 @@ This document serves as a physical tracker for pending technical executions and 
     4. Run the CORS unblock command in Cloud Shell: `echo '[{"origin": ["*"],"method": ["GET", "PUT", "POST", "DELETE", "OPTIONS"],"maxAgeSeconds": 3600}]' > cors.json && gsutil cors set cors.json gs://YOUR-ACTUAL-BUCKET-URL`
     5. Run `npx firebase deploy --only storage` in your terminal to deploy the airtight security rules.
 
+- [ ] **Migrate Open Graph SEO Interceptor to Firebase**
+  * Currently, our dynamic WhatsApp/SEO social card generator runs on a free Vercel Serverless API Route (`api/og.js`).
+  * **Next Steps (When moving pure-hosting to Firebase):**
+    1. Upgrade to the Blaze plan to unlock Cloud Functions.
+    2. Convert `api/og.js` into an Express Cloud Function in the `functions/` firewall.
+    3. Modify `firebase.json` rewrites to intercept `/news/:slug` and point to the custom function.
+
 ## Completed Milestones
 - [x] Integrate Global Tour Interactive Map & RSVP System
 - [x] Deploy Contact Form Security Anti-Spam Firebase Rules
