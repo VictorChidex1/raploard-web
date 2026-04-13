@@ -71,6 +71,17 @@ service cloud.firestore {
       allow write: if isAdmin(); // Only the Admin Dashboard can perform CMS actions (CRUD)
     }
 
+     // Journal images can be read by anyone (public site) but only written by Admin.
+    match /journal-covers/{imageId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // Deny anything else
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
     // ─── Integrations Collection (Spotify Synchronization Override) ────────────
     // The Spotify sync function writes to integrations/spotify every 24 hours.
     // The front-end needs to read this doc to power the embedded player.

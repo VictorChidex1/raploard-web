@@ -14,17 +14,20 @@ import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
 
 // ---------------------------------------------------------------------------
+// SEO Engine — Universal Interceptor
+// ---------------------------------------------------------------------------
+// This function handles the dynamic SEO for all routes (Home, Music, etc.)
+// and ensures and premium previews for social media.
+export { seoInterceptor } from "./seo";
+
+// ---------------------------------------------------------------------------
 // Initialise Firebase Admin SDK
 // ---------------------------------------------------------------------------
-// initializeApp() is called once at module load time. On the Cloud Functions
-// runtime it auto-detects project credentials. On the local emulator it uses
-// the FIREBASE_CONFIG & GCLOUD_PROJECT env vars set by the emulator itself.
 admin.initializeApp();
 
 const db = admin.firestore();
 
-// Cap the maximum number of concurrent containers globally. Override per-
-// function if a specific function needs a different limit.
+// Cap the maximum number of concurrent containers globally.
 setGlobalOptions({ maxInstances: 10 });
 
 // ---------------------------------------------------------------------------
@@ -137,8 +140,8 @@ async function fetchLatestRelease(
 ): Promise<SpotifyAlbum> {
   const url = new URL(`https://api.spotify.com/v1/artists/${artistId}/albums`);
   url.searchParams.set("include_groups", "single,album");
-  url.searchParams.set("market", "NG"); // Nigeria — Raploard's home market
-  url.searchParams.set("limit", "1"); // We only need the most recent
+  url.searchParams.set("market", "NG"); 
+  url.searchParams.set("limit", "1"); 
   url.searchParams.set("offset", "0");
 
   const response = await fetch(url.toString(), {
@@ -217,9 +220,9 @@ async function fetchFirstTrackId(
 export const syncLatestSpotifyRelease = onSchedule(
   {
     schedule: "every 24 hours",
-    timeZone: "Africa/Lagos", // Raploard's timezone — keeps logs readable
-    retryCount: 3, // Pub/Sub will retry up to 3 times on failure
-    memory: "256MiB", // Lightweight HTTP work — 256 MiB is sufficient
+    timeZone: "Africa/Lagos", 
+    retryCount: 3, 
+    memory: "256MiB", 
     timeoutSeconds: 60,
   },
   async (_event) => {
@@ -238,7 +241,6 @@ export const syncLatestSpotifyRelease = onSchedule(
 
     // ── Step 2: Authenticate with Spotify ───────────────────────────────────
     let accessToken: string;
-
     try {
       accessToken = await getSpotifyAccessToken();
       logger.info("[Spotify Sync] Spotify access token acquired.");
@@ -249,7 +251,6 @@ export const syncLatestSpotifyRelease = onSchedule(
 
     // ── Step 3: Fetch the latest release ────────────────────────────────────
     let latestRelease: SpotifyAlbum;
-
     try {
       latestRelease = await fetchLatestRelease(artistId, accessToken);
       logger.info(
